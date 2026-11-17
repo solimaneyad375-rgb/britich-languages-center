@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="ar" dir="rtl" class="dark">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Script to enforce Dark Mode and Language Direction before paint (eliminates flash) -->
+  <script>
+    (function () {
+      try {
+        var savedTheme = localStorage.getItem('bcl_theme');
+        if (savedTheme === 'light') {
+          document.documentElement.classList.remove('dark');
+          document.documentElement.classList.add('light');
+        } else {
+          document.documentElement.classList.add('dark');
+          document.documentElement.classList.remove('light');
+        }
+
+        var savedLang = localStorage.getItem('bcl_lang');
+        if (savedLang === 'en') {
+          document.documentElement.lang = 'en';
+          document.documentElement.dir = 'ltr';
+        } else {
+          document.documentElement.lang = 'ar';
+          document.documentElement.dir = 'rtl';
+        }
+      } catch (e) {
+        document.documentElement.classList.add('dark');
+        document.documentElement.dir = 'rtl';
+        document.documentElement.lang = 'ar';
+      }
+    })();
+  </script>
+
+  <!-- Primary SEO Meta Tags -->
+  <title>British Center for Languages | المركز البريطاني لتعليم اللغات</title>
+  <meta name="title" content="British Center for Languages | المركز البريطاني لتعليم اللغات" />
+  <meta name="description"
+    content="مؤسسة تعليمية وتدريبية متخصصة في بناء وتأهيل الكوادر البشرية، والتطوير المؤسسي، وتقديم خدمات إصدار الشهادات والتحقق الرقمي بالتعاون مع المؤسسات التعليمية الدولية بالمملكة المتحدة." />
+  <meta name="keywords"
+    content="British Center for Languages, المركز البريطاني لتعليم اللغات, التحقق من الشهادات, Certificate Verification, UKRLP 10099520, Companies House 16605467, تدريب لغات, شهادات معتمدة" />
+  <meta name="author" content="British Center for Languages" />
+  <meta name="robots" content="index, follow" />
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://britishcenter.uk/" />
+  <meta property="og:title" content="British Center for Languages | المركز البريطاني لتعليم اللغات" />
+  <meta property="og:description"
+    content="نحو تعليم مؤسسي وتأهيل بمعايير احترافية. منصة التحقق الرقمي من الشهادات والاعتمادات التعليمية." />
+  <meta property="og:image" content="/britich-languages-center/assets/cover.png" />
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="/britich-languages-center/assets/logo.png" />
+  <link rel="apple-touch-icon" href="/britich-languages-center/assets/logo.png" />
+
+  <!-- Google Web Fonts: Alexandria, IBM Plex Sans Arabic, Cormorant Garamond, Inter, Cairo, Cinzel, Alex Brush -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Alexandria:wght@400;500;600;700;800;900&family=Cairo:wght@400;500;600;700;800;900&family=Cinzel:wght@500;600;700;800;900&family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,600;1,700&family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet" />
+  <script type="module" crossorigin src="/britich-languages-center/assets/index-CMX4k-HZ.js"></script>
+  <link rel="stylesheet" crossorigin href="/britich-languages-center/assets/index-DCeop87O.css">
+</head>
+
+<body class="bg-[#F7F8FA] dark:bg-[#07182D] text-[#102F5C] dark:text-[#F8F9FC] antialiased transition-colors duration-250 selection:bg-[#C9A347]/30 selection:text-[#07182D]">
+  <div id="root"></div>
+</body>
+
+</html>
