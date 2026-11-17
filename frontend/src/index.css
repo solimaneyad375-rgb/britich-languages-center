@@ -1,0 +1,338 @@
+/*
+ * Project Design & Development
+ * Engineered by Eng. Eyad Ahmed
+ * SpeedUp Software Solutions
+ * © 2026 All Rights Reserved.
+ */
+@import "tailwindcss";
+
+@variant dark (&:where(.dark, .dark *));
+
+@layer base {
+  :root {
+    --primary-bg: #FFFFFF;
+    --secondary-bg: #F7F8FA;
+    --elevated-surface: #FFFFFF;
+    --gold-accent: #C5A04B;
+    --gold-light: #DFC075;
+    --gold-dark: #9A7B2C;
+    --british-red: #C8102E;
+    --text-primary: #102F5C;
+    --text-secondary: #4B5563;
+    --border-gold: rgba(197, 160, 75, 0.35);
+    --border-muted: rgba(226, 232, 240, 0.8);
+  }
+
+  :root.dark,
+  .dark {
+    --primary-bg: #07182D;
+    --secondary-bg: #142B49;
+    --royal-blue: #173A63;
+    --elevated-surface: #142B49;
+    --gold-accent: #C9A347;
+    --gold-light: #DFC075;
+    --gold-dark: #9A7B2C;
+    --british-red: #C8102E;
+    --text-primary: #F7F8FA;
+    --text-secondary: #AAB8CB;
+    --border-gold: rgba(201, 163, 71, 0.25);
+    --border-muted: rgba(255, 255, 255, 0.1);
+  }
+
+  body {
+    font-family: 'Alexandria', 'IBM Plex Sans Arabic', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background-color: #FFFFFF;
+    color: #07182D;
+    overflow-x: hidden;
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    transition: background-color 0.25s ease, color 0.25s ease;
+  }
+
+  .dark body,
+  html.dark body {
+    background-color: #07182D;
+    color: #F7F8FA;
+  }
+
+  /* English layout styling (LTR) */
+  [dir="ltr"] {
+    direction: ltr;
+  }
+
+  [dir="ltr"] body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    line-height: 1.6;
+    text-align: left;
+  }
+
+  [dir="ltr"] h1,
+  [dir="ltr"] h2,
+  [dir="ltr"] h3,
+  [dir="ltr"] h4,
+  [dir="ltr"] .font-heading,
+  [dir="ltr"] .font-serif {
+    letter-spacing: -0.015em;
+    font-family: 'Cormorant Garamond', Georgia, serif;
+  }
+
+  [dir="ltr"] h1:not(.text-center),
+  [dir="ltr"] h2:not(.text-center),
+  [dir="ltr"] h3:not(.text-center),
+  [dir="ltr"] h4:not(.text-center),
+  [dir="ltr"] p:not(.text-center),
+  [dir="ltr"] .text-start {
+    text-align: left;
+  }
+
+  [dir="ltr"] .text-end {
+    text-align: right;
+  }
+
+  [dir="ltr"] nav,
+  [dir="ltr"] .nav-link {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-weight: 500;
+  }
+
+  [dir="ltr"] button {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+
+  /* Arabic layout and typography (RTL) */
+  [dir="rtl"] {
+    direction: rtl;
+  }
+
+  [dir="rtl"],
+  [dir="rtl"] * {
+    letter-spacing: normal !important;
+  }
+
+  [dir="rtl"] body {
+    text-align: right;
+  }
+
+  [dir="rtl"] h1,
+  [dir="rtl"] h2,
+  [dir="rtl"] h3,
+  [dir="rtl"] h4,
+  [dir="rtl"] .font-heading,
+  [dir="rtl"] .font-serif {
+    font-family: 'Alexandria', sans-serif !important;
+    line-height: 1.38;
+  }
+
+  [dir="rtl"] h1:not(.text-center),
+  [dir="rtl"] h2:not(.text-center),
+  [dir="rtl"] h3:not(.text-center),
+  [dir="rtl"] h4:not(.text-center),
+  [dir="rtl"] p:not(.text-center),
+  [dir="rtl"] .text-start {
+    text-align: right;
+  }
+
+  [dir="rtl"] .text-end {
+    text-align: left;
+  }
+
+  [dir="rtl"] h1 {
+    font-weight: 700;
+  }
+
+  [dir="rtl"] h2,
+  [dir="rtl"] h3,
+  [dir="rtl"] h4 {
+    font-weight: 600;
+  }
+
+  [dir="rtl"] nav,
+  [dir="rtl"] .nav-link {
+    font-family: 'Alexandria', sans-serif !important;
+    font-weight: 500;
+  }
+
+  [dir="rtl"] button {
+    font-family: 'Alexandria', sans-serif !important;
+    font-weight: 600;
+  }
+
+  [dir="rtl"] body,
+  [dir="rtl"] p,
+  [dir="rtl"] span,
+  [dir="rtl"] li,
+  [dir="rtl"] a,
+  [dir="rtl"] input,
+  [dir="rtl"] textarea {
+    font-family: 'Alexandria', 'IBM Plex Sans Arabic', sans-serif;
+    line-height: 1.7;
+    font-weight: 400;
+  }
+}
+
+/* Adaptive Luxury / Academic Card */
+.dark-luxury-card {
+  background-color: #FFFFFF;
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
+  transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease, background-color 0.25s ease;
+}
+
+.dark .dark-luxury-card,
+html.dark .dark-luxury-card {
+  background-color: #152B49;
+  border: 1px solid rgba(197, 160, 75, 0.22);
+  box-shadow: none;
+}
+
+.dark-luxury-card:hover {
+  border-color: #C5A04B;
+  box-shadow: 0 8px 30px -6px rgba(0, 0, 0, 0.1);
+}
+
+.dark .dark-luxury-card:hover,
+html.dark .dark-luxury-card:hover {
+  border-color: rgba(197, 160, 75, 0.5);
+  box-shadow: 0 8px 30px -6px rgba(0, 0, 0, 0.5);
+}
+
+/* Subtle Editorial Gold Line */
+.gold-hairline {
+  height: 1px;
+  background-color: #C5A04B;
+  opacity: 0.35;
+}
+
+/* Hero Staggered Subtle Entrance Keyframes */
+@keyframes heroFadeUp {
+  0% {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes heroImageReveal {
+  0% {
+    opacity: 0;
+    transform: scale(0.985) translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.anim-eyebrow {
+  animation: heroFadeUp 0.65s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both;
+}
+
+.anim-headline {
+  animation: heroFadeUp 0.75s cubic-bezier(0.16, 1, 0.3, 1) 0.22s both;
+}
+
+.anim-desc {
+  animation: heroFadeUp 0.75s cubic-bezier(0.16, 1, 0.3, 1) 0.35s both;
+}
+
+.anim-actions {
+  animation: heroFadeUp 0.75s cubic-bezier(0.16, 1, 0.3, 1) 0.48s both;
+}
+
+.anim-image {
+  animation: heroImageReveal 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .anim-eyebrow,
+  .anim-headline,
+  .anim-desc,
+  .anim-actions,
+  .anim-image {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
+/* Custom discreet dark scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #08182E;
+}
+::-webkit-scrollbar-thumb {
+  background: #C5A04B;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #DFC075;
+}
+
+/* Print styling for certificates and student ID cards */
+@media print {
+  @page {
+    size: A4 landscape;
+    margin: 0;
+  }
+  html, body {
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #FFFFFF !important;
+    width: 297mm !important;
+    height: 210mm !important;
+    overflow: hidden !important;
+  }
+  nav, footer, .no-print, header {
+    display: none !important;
+  }
+  #academic-certificate-print-area {
+    display: block !important;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 297mm !important;
+    height: 210mm !important;
+    max-width: 297mm !important;
+    max-height: 210mm !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+    page-break-inside: avoid !important;
+    page-break-after: avoid !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    z-index: 999999 !important;
+  }
+  .print-only {
+    display: block !important;
+  }
+  .print-container {
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+}
+
+/* Smooth Page Transitions */
+@keyframes pageFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.page-transition {
+  animation: pageFadeIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}

@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<body>
+<div id="output"></div>
+<script>
+  const c = document.createElement('canvas');
+  c.width = 10; c.height = 10;
+  const ctx = c.getContext('2d');
+  ctx.fillStyle = 'blue';
+  ctx.fillRect(0,0,10,10);
+  const data = c.toDataURL('image/webp', 0.9);
+  document.getElementById('output').textContent = data;
+</script>
+</body>
+</html>
