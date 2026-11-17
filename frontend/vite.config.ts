@@ -11,6 +11,7 @@ import path from 'path';
 
 // https://vite.dev/config/
 export default defineConfig({
+  base: '/britich-languages-center/',
   plugins: [
     react(),
     tailwindcss(),
