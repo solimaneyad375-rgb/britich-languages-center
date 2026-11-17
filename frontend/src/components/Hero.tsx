@@ -1,6 +1,5 @@
 /*
- * Project Design & Development
- * Engineered by Eng. Eyad Ahmed
+ * Developed & Engineered by Eng. Eyad Ahmed
  * SpeedUp Software Solutions
  * © 2026 All Rights Reserved.
  */
@@ -8,6 +7,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 import { ShieldCheck, ArrowRight, ArrowLeft } from 'lucide-react';
+import { getAssetUrl } from '../utils/assets';
 
 interface HeroProps {
   navigate?: (path: string) => void;
@@ -18,14 +18,15 @@ export const Hero: React.FC<HeroProps> = ({ navigate: propNavigate }) => {
   const navigate = propNavigate || routerNavigate;
   const { lang, isRtl } = useLanguage();
   const ArrowIcon = isRtl ? ArrowLeft : ArrowRight;
+  const heroBgWebp = getAssetUrl('assets/big-ben-hero.webp');
 
   return (
     <section className="relative w-full min-h-[85vh] lg:min-h-[90vh] flex items-center overflow-hidden bg-[#07182D] text-[#F8F9FC]">
-      {/* 1. FULL-WIDTH CINEMATIC BIG BEN HERO BACKGROUND (HIGH CLARITY) */}
+      {/* 1. FULL-WIDTH CINEMATIC BIG BEN HERO BACKGROUND (HIGH CLARITY, WEBP OPTIMIZED) */}
       <div
         className="absolute inset-0 z-0 select-none pointer-events-none bg-no-repeat bg-cover"
         style={{
-          backgroundImage: "url('/assets/big-ben-hero.jpg')",
+          backgroundImage: `url('${heroBgWebp}')`,
           backgroundPosition: 'center 45%',
           backgroundSize: 'cover',
           backgroundRepeat: 'no-repeat',

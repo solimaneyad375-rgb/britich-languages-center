@@ -1,6 +1,5 @@
 /*
- * Project Design & Development
- * Engineered by Eng. Eyad Ahmed
+ * Developed & Engineered by Eng. Eyad Ahmed
  * SpeedUp Software Solutions
  * © 2026 All Rights Reserved.
  */
@@ -9,6 +8,7 @@ import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
 import { api } from '../services/api';
 import { storage } from '../services/storage';
+import { getAssetUrl } from '../utils/assets';
 import {
   Certificate,
   DashboardStats,
@@ -415,11 +415,11 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate: propNa
           <div className="flex items-center gap-3 pb-5 border-b border-white/10">
             <div className="w-11 h-11 rounded-xs bg-white/95 border border-[rgba(197,160,75,0.4)] p-0.5 flex items-center justify-center shrink-0 shadow-sm">
               <img
-                src="/assets/logo.png"
+                src={getAssetUrl('assets/logo.webp')}
                 alt="British Center for Languages"
                 className="w-full h-full object-contain"
                 onError={(e) => {
-                  (e.target as HTMLImageElement).src = '/assets/logo.svg';
+                  (e.target as HTMLImageElement).src = getAssetUrl('assets/logo.png');
                 }}
               />
             </div>

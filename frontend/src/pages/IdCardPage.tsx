@@ -1,6 +1,5 @@
 /*
- * Project Design & Development
- * Engineered by Eng. Eyad Ahmed
+ * Developed & Engineered by Eng. Eyad Ahmed
  * SpeedUp Software Solutions
  * © 2026 All Rights Reserved.
  */
@@ -11,6 +10,7 @@ import { StudentIdCardBadge } from '../components/StudentIdCardBadge';
 import { api } from '../services/api';
 import { StudentIdCard } from '../types';
 import { Award, Search, UserCheck } from 'lucide-react';
+import { getAssetUrl } from '../utils/assets';
 
 interface IdCardPageProps {
   navigate?: (path: string) => void;
@@ -51,7 +51,17 @@ export const IdCardPage: React.FC<IdCardPageProps> = ({ navigate: propNavigate }
       {/* Header */}
       <div className="bg-[#102F5C] text-white py-14 relative overflow-hidden text-center no-print">
         <div className="absolute inset-0 opacity-20">
-          <img src="/assets/cover.png" alt="Cover" className="w-full h-full object-cover" />
+          <img
+            src={getAssetUrl('assets/cover.webp')}
+            alt="Cover"
+            width="1200"
+            height="400"
+            loading="lazy"
+            className="w-full h-full object-cover"
+            onError={(e) => {
+              (e.target as HTMLImageElement).src = getAssetUrl('assets/cover.png');
+            }}
+          />
         </div>
         <div className="relative z-10 max-w-4xl mx-auto px-4 space-y-3">
           <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-white/10 border border-[#C5A04B]/50 text-[#DFC075] text-xs font-bold uppercase tracking-wider">

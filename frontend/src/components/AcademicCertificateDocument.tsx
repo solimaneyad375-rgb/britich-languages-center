@@ -1,12 +1,12 @@
 /*
- * Project Design & Development
- * Engineered by Eng. Eyad Ahmed
+ * Developed & Engineered by Eng. Eyad Ahmed
  * SpeedUp Software Solutions
  * © 2026 All Rights Reserved.
  */
 import React, { useEffect, useState, useRef, forwardRef, useImperativeHandle } from 'react';
 import QRCode from 'qrcode';
 import { PublicVerificationResponse } from '../types';
+import { getAssetUrl } from '../utils/assets';
 
 interface AcademicCertificateDocumentProps {
   certificate: PublicVerificationResponse;
@@ -219,11 +219,11 @@ export const AcademicCertificateDocument = forwardRef<HTMLDivElement, AcademicCe
               {/* Official Logo */}
               <div className="px-2.5 py-0.5 bg-white/95 rounded-xs border border-[#C9A347]/40 shadow-2xs">
                 <img
-                  src="/assets/official-logo.jpg"
+                  src={getAssetUrl('assets/official-logo.webp')}
                   alt="British Center Official Crest"
                   className="h-10 w-auto object-contain"
                   onError={(e) => {
-                    (e.target as HTMLImageElement).src = '/assets/logo-trimmed.png';
+                    (e.target as HTMLImageElement).src = getAssetUrl('assets/logo-trimmed.webp');
                   }}
                 />
               </div>

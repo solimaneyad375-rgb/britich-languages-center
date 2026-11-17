@@ -1,6 +1,5 @@
 /*
- * Project Design & Development
- * Engineered by Eng. Eyad Ahmed
+ * Developed & Engineered by Eng. Eyad Ahmed
  * SpeedUp Software Solutions
  * © 2026 All Rights Reserved.
  */
@@ -10,6 +9,7 @@ import { useLanguage } from '../context/LanguageContext';
 import { Award, Users, Building, BookOpen, ShieldCheck, Handshake, ArrowRight, ArrowLeft, X, Check, Maximize2 } from 'lucide-react';
 import { AcademicCertificateDocument } from './AcademicCertificateDocument';
 import { PublicVerificationResponse } from '../types';
+import { getAssetUrl } from '../utils/assets';
 
 const sampleSpecimenCertificate: PublicVerificationResponse = {
   isFound: true,
@@ -221,7 +221,7 @@ export const ServicesSection: React.FC = () => {
               <div className="relative bg-[#FAF8F2] p-4 text-[#07182D] rounded-xs border border-[#C9A34A]/30 space-y-2 select-none shadow-sm">
                 {/* Micro Header */}
                 <div className="flex flex-col items-center text-center">
-                  <img src="/assets/logo-trimmed.png" alt="Crest" className="h-6 w-auto object-contain mb-1" />
+                  <img src={getAssetUrl('assets/logo-trimmed.webp')} alt="Crest" className="h-6 w-auto object-contain mb-1" />
                   <span className="text-[9px] font-bold tracking-[0.2em] font-serif uppercase text-[#07182D]">BRITISH CENTER FOR LANGUAGES</span>
                   <span className="text-[8px] font-semibold text-[#C9A34A]">المركز البريطاني لتعليم اللغات</span>
                 </div>
@@ -328,10 +328,15 @@ export const ServicesSection: React.FC = () => {
             <div className="lg:col-span-6 order-2 lg:order-1">
               <div className="relative overflow-hidden rounded-xs border border-gray-200 dark:border-[rgba(197,160,75,0.35)] shadow-xl bg-slate-100 dark:bg-[#152B49] group aspect-[16/11]">
                 <img
-                  src="/assets/editorial/training-workshop.jpg"
+                  src={getAssetUrl('assets/editorial/training-workshop.webp')}
                   alt={lang === 'ar' ? 'ورشة عمل وتدريب وتأهيل الكوادر التعليمية' : 'Professional Training Workshop - Educational Staff Qualification'}
-                  className="w-full h-full object-cover object-center filter saturate-[0.98] contrast-[1.02] transition-transform duration-700 ease-out group-hover:scale-[1.02]"
+                  width="640"
+                  height="440"
                   loading="lazy"
+                  className="w-full h-full object-cover object-center filter saturate-[0.98] contrast-[1.02] transition-transform duration-700 ease-out group-hover:scale-[1.02]"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = getAssetUrl('assets/editorial/training-workshop.jpg');
+                  }}
                 />
                 <div className="absolute bottom-0 inset-x-0 bg-white/95 dark:bg-[#08182E]/95 backdrop-blur-xs px-4 py-2 border-t border-gray-200 dark:border-[rgba(197,160,75,0.22)] flex items-center justify-between text-[11px] text-slate-600 dark:text-[#B8C5D6] font-mono">
                   <span className="tracking-wider">{lang === 'ar' ? 'تأهيل وتطوير المدربين' : 'STAFF TRAINING WORKSHOP'}</span>
@@ -428,10 +433,15 @@ export const ServicesSection: React.FC = () => {
             <div className="lg:col-span-6">
               <div className="relative overflow-hidden rounded-xs border border-gray-200 dark:border-[rgba(197,160,75,0.35)] shadow-xl bg-slate-100 dark:bg-[#152B49] group aspect-[16/11]">
                 <img
-                  src="/assets/editorial/modern-lecture-hall.jpg"
+                  src={getAssetUrl('assets/editorial/modern-lecture-hall.webp')}
                   alt={lang === 'ar' ? 'مدرج وقاعة محاضرات أكاديمية حديثة' : 'Modern Academic Lecture Hall - Institutional Infrastructure'}
-                  className="w-full h-full object-cover object-center filter saturate-[0.98] contrast-[1.02] transition-transform duration-700 ease-out group-hover:scale-[1.02]"
+                  width="640"
+                  height="440"
                   loading="lazy"
+                  className="w-full h-full object-cover object-center filter saturate-[0.98] contrast-[1.02] transition-transform duration-700 ease-out group-hover:scale-[1.02]"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = getAssetUrl('assets/editorial/modern-lecture-hall.jpg');
+                  }}
                 />
               </div>
             </div>
@@ -442,10 +452,15 @@ export const ServicesSection: React.FC = () => {
             <div className="lg:col-span-6 order-2 lg:order-1">
               <div className="relative overflow-hidden rounded-xs border border-gray-200 dark:border-[rgba(197,160,75,0.35)] shadow-xl bg-slate-100 dark:bg-[#152B49] group aspect-[16/11]">
                 <img
-                  src="/assets/editorial/academic-classroom.jpg"
+                  src={getAssetUrl('assets/editorial/academic-classroom.webp')}
                   alt={lang === 'ar' ? 'محاضرة تفاعلية في بيئة تدريس متطورة' : 'Interactive Academic Classroom - Educational and Training Programs'}
-                  className="w-full h-full object-cover object-center filter saturate-[0.98] contrast-[1.02] transition-transform duration-700 ease-out group-hover:scale-[1.02]"
+                  width="640"
+                  height="440"
                   loading="lazy"
+                  className="w-full h-full object-cover object-center filter saturate-[0.98] contrast-[1.02] transition-transform duration-700 ease-out group-hover:scale-[1.02]"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = getAssetUrl('assets/editorial/academic-classroom.jpg');
+                  }}
                 />
               </div>
             </div>

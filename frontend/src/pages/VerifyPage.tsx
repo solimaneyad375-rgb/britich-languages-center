@@ -1,6 +1,5 @@
 /*
- * Project Design & Development
- * Engineered by Eng. Eyad Ahmed
+ * Developed & Engineered by Eng. Eyad Ahmed
  * SpeedUp Software Solutions
  * © 2026 All Rights Reserved.
  */
@@ -8,6 +7,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import { api } from '../services/api';
 import { PublicVerificationResponse } from '../types';
+import { getAssetUrl } from '../utils/assets';
 import {
   ShieldCheck,
   Search,
@@ -335,9 +335,15 @@ export const VerifyPage: React.FC<VerifyPageProps> = ({ initialQuery = '', navig
                 <div className="flex items-center gap-3.5">
                   <div className="bg-white/95 px-2 py-1 rounded-xs border border-[rgba(197,160,75,0.3)] shadow-xs">
                     <img
-                      src="/assets/logo.png"
+                      src={getAssetUrl('assets/logo.webp')}
                       alt="British Center for Languages"
+                      width="120"
+                      height="44"
+                      loading="lazy"
                       className="h-11 w-auto object-contain"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src = getAssetUrl('assets/logo.png');
+                      }}
                     />
                   </div>
                   <div>

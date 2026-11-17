@@ -1,6 +1,5 @@
 /*
- * Project Design & Development
- * Engineered by Eng. Eyad Ahmed
+ * Developed & Engineered by Eng. Eyad Ahmed
  * SpeedUp Software Solutions
  * © 2026 All Rights Reserved.
  */
@@ -8,6 +7,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 import { ShieldCheck, Mail, Phone, MapPin, Lock, ExternalLink, MessageCircle } from 'lucide-react';
+import { getAssetUrl } from '../utils/assets';
 
 interface FooterProps {
   navigate?: (path: string) => void;
@@ -34,11 +34,14 @@ export const Footer: React.FC<FooterProps> = ({ navigate: propNavigate }) => {
               className="flex items-center gap-2 select-none py-1 cursor-pointer group"
             >
               <img
-                src="/assets/official-logo-transparent.png"
+                src={getAssetUrl('assets/official-logo-transparent.webp')}
                 alt="British Center for Languages Official Logo"
+                width="180"
+                height="48"
+                loading="lazy"
                 className="h-11 sm:h-12 w-auto object-contain transition-transform duration-200 group-hover:scale-[1.02]"
                 onError={(e) => {
-                  (e.target as HTMLImageElement).src = '/assets/official-logo.jpg';
+                  (e.target as HTMLImageElement).src = getAssetUrl('assets/official-logo.webp');
                 }}
               />
             </div>

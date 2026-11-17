@@ -1,6 +1,5 @@
 /*
- * Project Design & Development
- * Engineered by Eng. Eyad Ahmed
+ * Developed & Engineered by Eng. Eyad Ahmed
  * SpeedUp Software Solutions
  * © 2026 All Rights Reserved.
  */
@@ -9,6 +8,7 @@ import { useLanguage } from '../context/LanguageContext';
 import { StudentIdCard } from '../types';
 import { ShieldCheck, Printer, Award, UserCheck, Calendar } from 'lucide-react';
 import QRCode from 'qrcode';
+import { getAssetUrl } from '../utils/assets';
 
 interface StudentIdCardBadgeProps {
   card: StudentIdCard;
@@ -68,11 +68,11 @@ export const StudentIdCardBadge: React.FC<StudentIdCardBadgeProps> = ({ card }) 
             <div className="flex items-center gap-2.5">
               <div className="w-10 h-10 rounded-lg bg-white border border-[#C5A04B] p-0.5 flex items-center justify-center shadow-sm">
                 <img
-                  src="/assets/logo.png"
+                  src={getAssetUrl('assets/logo.webp')}
                   alt="British Center for Languages"
                   className="w-full h-full object-contain"
                   onError={(e) => {
-                    (e.target as HTMLImageElement).src = '/assets/logo.svg';
+                    (e.target as HTMLImageElement).src = getAssetUrl('assets/logo.png');
                   }}
                 />
               </div>

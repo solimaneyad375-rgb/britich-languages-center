@@ -1,6 +1,5 @@
 /*
- * Project Design & Development
- * Engineered by Eng. Eyad Ahmed
+ * Developed & Engineered by Eng. Eyad Ahmed
  * SpeedUp Software Solutions
  * © 2026 All Rights Reserved.
  */
@@ -10,6 +9,7 @@ import { useLanguage } from '../context/LanguageContext';
 import { useTheme } from '../context/ThemeContext';
 import { useAuth } from '../context/AuthContext';
 import { Menu, X, ShieldCheck, Globe, Lock, Sun, Moon } from 'lucide-react';
+import { getAssetUrl } from '../utils/assets';
 
 interface NavbarProps {
   currentPath?: string;
@@ -72,8 +72,11 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath: propPath, navigate:
             title={lang === 'ar' ? 'المركز البريطاني لتعليم اللغات' : 'British Center for Languages'}
           >
             <img
-              src="/assets/official-logo-transparent.png"
+              src={getAssetUrl('assets/official-logo-transparent.webp')}
               alt="British Center for Languages Official Crest & Brand Logo"
+              width="180"
+              height="48"
+              loading="eager"
               className={`w-auto object-contain transition-all duration-300 group-hover:scale-[1.02] ${
                 isScrolled ? 'h-9 sm:h-10' : 'h-10 sm:h-12'
               }`}
@@ -81,7 +84,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath: propPath, navigate:
                 maxHeight: isScrolled ? '40px' : '48px',
               }}
               onError={(e) => {
-                (e.target as HTMLImageElement).src = '/assets/official-logo.jpg';
+                (e.target as HTMLImageElement).src = getAssetUrl('assets/official-logo.webp');
               }}
             />
           </div>

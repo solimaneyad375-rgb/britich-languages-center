@@ -1,6 +1,5 @@
 /*
- * Project Design & Development
- * Engineered by Eng. Eyad Ahmed
+ * Developed & Engineered by Eng. Eyad Ahmed
  * SpeedUp Software Solutions
  * © 2026 All Rights Reserved.
  */
@@ -8,6 +7,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 import { PartnersSection } from '../components/PartnersSection';
+import { getAssetUrl } from '../utils/assets';
 import {
   Building2,
   Handshake,
@@ -96,10 +96,15 @@ export const PartnersPage: React.FC<PartnersPageProps> = ({ navigate: propNaviga
               <div className="relative group bg-[#08182E] p-2 rounded-xs border-2 border-[rgba(197,160,75,0.35)] shadow-2xl overflow-hidden">
                 <div className="relative overflow-hidden aspect-[16/10] sm:aspect-[16/10] rounded-xs bg-[#08182E]">
                   <img
-                    src="/assets/editorial/academic-partnership-meeting.jpg"
+                    src={getAssetUrl('assets/editorial/academic-partnership-meeting.webp')}
                     alt={lang === 'ar' ? 'اجتماع التعاون الأكاديمي والشراكات المؤسسية' : 'Institutional Academic Partnership & Collaboration Meeting'}
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    width="700"
+                    height="440"
                     loading="lazy"
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = getAssetUrl('assets/editorial/academic-partnership-meeting.jpg');
+                    }}
                   />
                 </div>
               </div>

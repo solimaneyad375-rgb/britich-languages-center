@@ -1,12 +1,12 @@
 /*
- * Project Design & Development
- * Engineered by Eng. Eyad Ahmed
+ * Developed & Engineered by Eng. Eyad Ahmed
  * SpeedUp Software Solutions
  * © 2026 All Rights Reserved.
  */
 import React from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import { Award, ShieldCheck, Handshake, Users } from 'lucide-react';
+import { getAssetUrl } from '../utils/assets';
 
 export const AboutSection: React.FC = () => {
   const { lang, t } = useLanguage();
@@ -95,10 +95,15 @@ export const AboutSection: React.FC = () => {
           <div className="lg:col-span-5 order-2 lg:order-1">
             <div className="relative overflow-hidden aspect-[16/10] sm:aspect-[16/9] lg:aspect-[4/3] border border-gray-200 dark:border-[rgba(197,160,75,0.3)] shadow-xl bg-slate-100 dark:bg-[#152B49] rounded-xs group">
               <img
-                src="/assets/editorial/auditorium-lecture.jpg"
+                src={getAssetUrl('assets/editorial/auditorium-lecture.webp')}
                 alt={lang === 'ar' ? 'قاعة المحاضرات الأكاديمية والتدريب' : 'British Center Academic Lecture Auditorium'}
-                className="w-full h-full object-cover object-center filter saturate-[0.98] contrast-[1.02] transition-transform duration-700 ease-out group-hover:scale-[1.02]"
+                width="640"
+                height="480"
                 loading="lazy"
+                className="w-full h-full object-cover object-center filter saturate-[0.98] contrast-[1.02] transition-transform duration-700 ease-out group-hover:scale-[1.02]"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src = getAssetUrl('assets/editorial/auditorium-lecture.jpg');
+                }}
               />
             </div>
           </div>

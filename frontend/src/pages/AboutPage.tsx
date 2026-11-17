@@ -1,6 +1,5 @@
 /*
- * Project Design & Development
- * Engineered by Eng. Eyad Ahmed
+ * Developed & Engineered by Eng. Eyad Ahmed
  * SpeedUp Software Solutions
  * © 2026 All Rights Reserved.
  */
@@ -9,6 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 import { AboutSection } from '../components/AboutSection';
 import { UkCooperationSection } from '../components/UkCooperationSection';
+import { getAssetUrl } from '../utils/assets';
 
 interface AboutPageProps {
   navigate?: (path: string) => void;
@@ -51,10 +51,15 @@ export const AboutPage: React.FC<AboutPageProps> = ({ navigate: propNavigate }) 
             <div className="lg:col-span-6 order-2 lg:order-1">
               <div className="relative overflow-hidden rounded-xs border border-gray-200 dark:border-[rgba(197,160,75,0.35)] shadow-2xl bg-slate-100 dark:bg-[#152B49] group">
                 <img
-                  src="/assets/editorial/institution-building.jpg"
+                  src={getAssetUrl('assets/editorial/institution-building.webp')}
                   alt={lang === 'ar' ? 'المقر التعليمي والبيئة المؤسسية للمركز' : 'British Center Educational Institution Building'}
-                  className="w-full h-[360px] sm:h-[420px] lg:h-[480px] object-cover object-center filter saturate-[0.98] contrast-[1.02] transition-transform duration-700 ease-out group-hover:scale-[1.015]"
+                  width="720"
+                  height="480"
                   loading="lazy"
+                  className="w-full h-[360px] sm:h-[420px] lg:h-[480px] object-cover object-center filter saturate-[0.98] contrast-[1.02] transition-transform duration-700 ease-out group-hover:scale-[1.015]"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = getAssetUrl('assets/editorial/institution-building.jpg');
+                  }}
                 />
               </div>
             </div>

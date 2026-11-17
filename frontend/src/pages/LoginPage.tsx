@@ -1,6 +1,5 @@
 /*
- * Project Design & Development
- * Engineered by Eng. Eyad Ahmed
+ * Developed & Engineered by Eng. Eyad Ahmed
  * SpeedUp Software Solutions
  * © 2026 All Rights Reserved.
  */
@@ -10,6 +9,7 @@ import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
 import { api } from '../services/api';
 import { Lock, User, ShieldCheck, ArrowRight, ArrowLeft, AlertCircle } from 'lucide-react';
+import { getAssetUrl } from '../utils/assets';
 
 interface LoginPageProps {
   navigate?: (path: string) => void;
@@ -55,11 +55,14 @@ export const LoginPage: React.FC<LoginPageProps> = ({ navigate: propNavigate }) 
           <div className="relative inline-flex items-center justify-center p-[1px] rounded-xs bg-gradient-to-b from-[#C5A04B]/60 via-[rgba(197,160,75,0.3)] to-[#C5A04B]/60 shadow-xs mx-auto">
             <div className="bg-[#FAF8F5] px-3 py-1.5 rounded-[2px] flex items-center justify-center">
               <img
-                src="/assets/logo-trimmed.png"
+                src={getAssetUrl('assets/logo-trimmed.webp')}
                 alt="British Center for Languages"
+                width="140"
+                height="48"
+                loading="eager"
                 className="h-12 w-auto object-contain"
                 onError={(e) => {
-                  (e.target as HTMLImageElement).src = '/assets/logo.png';
+                  (e.target as HTMLImageElement).src = getAssetUrl('assets/logo.webp');
                 }}
               />
             </div>
