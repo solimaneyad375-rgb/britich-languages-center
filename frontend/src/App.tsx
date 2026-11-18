@@ -31,7 +31,19 @@ const ScrollToTop: React.FC = () => {
 
 // Protected Admin Dashboard Route
 const ProtectedAdminRoute: React.FC = () => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, isLoading } = useAuth();
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-[#08182E] flex flex-col items-center justify-center space-y-4">
+        <div className="w-10 h-10 border-2 border-[#C5A04B] border-t-transparent rounded-full animate-spin" />
+        <span className="text-xs font-mono uppercase tracking-widest text-[#C5A04B]">
+          Verifying Institutional Credentials...
+        </span>
+      </div>
+    );
+  }
+
   if (!isAuthenticated) {
     return <Navigate to="/admin/login" replace />;
   }
@@ -40,8 +52,8 @@ const ProtectedAdminRoute: React.FC = () => {
 
 // Dedicated Admin Login Route
 const AdminLoginRoute: React.FC = () => {
-  const { isAuthenticated } = useAuth();
-  if (isAuthenticated) {
+  const { isAuthenticated, isLoading } = useAuth();
+  if (!isLoading && isAuthenticated) {
     return <Navigate to="/admin" replace />;
   }
   return <LoginPage />;
@@ -98,6 +110,8 @@ const AppLayout: React.FC = () => {
           <Route path="/admin/login" element={<AdminLoginRoute />} />
           <Route path="/login" element={<Navigate to="/admin/login" replace />} />
           <Route path="/admin" element={<ProtectedAdminRoute />} />
+          <Route path="/admin/dashboard" element={<ProtectedAdminRoute />} />
+          <Route path="/admin/*" element={<ProtectedAdminRoute />} />
 
           {/* Fallback route */}
           <Route path="*" element={<Navigate to="/" replace />} />

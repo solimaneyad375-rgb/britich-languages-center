@@ -1,3 +1,4 @@
+// Developed by Eng. Eyad — SpeedUp Software.
 /*
  * Developed & Engineered by Eng. Eyad Ahmed
  * SpeedUp Software Solutions
@@ -19,3 +20,15 @@ export function getAssetUrl(assetPath: string): string {
     : `${import.meta.env.BASE_URL}/`;
   return `${baseUrl}${cleanPath}`;
 }
+
+/**
+ * Resolves full public verification URL respecting base URL (e.g. GitHub Pages subpath).
+ */
+export function getVerifyUrl(certParam: string): string {
+  const origin = typeof window !== 'undefined' && window.location ? window.location.origin : '';
+  const baseUrl = import.meta.env.BASE_URL.endsWith('/')
+    ? import.meta.env.BASE_URL
+    : `${import.meta.env.BASE_URL}/`;
+  return `${origin}${baseUrl}verify?certificate=${encodeURIComponent(certParam)}`;
+}
+

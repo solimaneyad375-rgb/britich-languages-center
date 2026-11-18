@@ -165,8 +165,8 @@
   [dir="rtl"] a,
   [dir="rtl"] input,
   [dir="rtl"] textarea {
-    font-family: 'Alexandria', 'IBM Plex Sans Arabic', sans-serif;
-    line-height: 1.7;
+    font-family: 'IBM Plex Sans Arabic', 'Alexandria', sans-serif;
+    line-height: 1.75;
     font-weight: 400;
   }
 }

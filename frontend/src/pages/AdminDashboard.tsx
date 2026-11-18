@@ -1,3 +1,4 @@
+// Developed by Eng. Eyad — SpeedUp Software.
 /*
  * Developed & Engineered by Eng. Eyad Ahmed
  * SpeedUp Software Solutions
@@ -8,7 +9,7 @@ import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
 import { api } from '../services/api';
 import { storage } from '../services/storage';
-import { getAssetUrl } from '../utils/assets';
+import { getAssetUrl, getVerifyUrl } from '../utils/assets';
 import {
   Certificate,
   DashboardStats,
@@ -152,7 +153,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate: propNa
   // When QR modal opens, render QR code on canvas
   useEffect(() => {
     if (qrModalCert && qrCanvasRef.current) {
-      const url = `${window.location.origin}/verify?certificate=${encodeURIComponent(qrModalCert.certificateNumber)}`;
+      const url = getVerifyUrl(qrModalCert.certificateNumber);
       QRCode.toCanvas(
         qrCanvasRef.current,
         url,

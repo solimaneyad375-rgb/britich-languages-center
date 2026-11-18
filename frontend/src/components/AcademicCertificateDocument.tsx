@@ -1,3 +1,4 @@
+// Developed by Eng. Eyad — SpeedUp Software.
 /*
  * Developed & Engineered by Eng. Eyad Ahmed
  * SpeedUp Software Solutions
@@ -6,7 +7,7 @@
 import React, { useEffect, useState, useRef, forwardRef, useImperativeHandle } from 'react';
 import QRCode from 'qrcode';
 import { PublicVerificationResponse } from '../types';
-import { getAssetUrl } from '../utils/assets';
+import { getAssetUrl, getVerifyUrl } from '../utils/assets';
 
 interface AcademicCertificateDocumentProps {
   certificate: PublicVerificationResponse;
@@ -33,10 +34,11 @@ export const AcademicCertificateDocument = forwardRef<HTMLDivElement, AcademicCe
         return;
       }
       const certRef = isSample ? 'BCL-SAMPLE-SPECIMEN' : (certificate.certificateNumber || 'BCL-VERIFIED');
-      const origin = typeof window !== 'undefined' && window.location ? window.location.origin : 'https://britishcenter.org';
+      const origin = typeof window !== 'undefined' && window.location ? window.location.origin : '';
+      const baseUrl = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
       const verifyUrl = isSample
-        ? `${origin}/certificates`
-        : `${origin}/verify?certificate=${encodeURIComponent(certRef)}`;
+        ? `${origin}${baseUrl}certificates`
+        : getVerifyUrl(certRef);
       QRCode.toDataURL(
         verifyUrl,
         {

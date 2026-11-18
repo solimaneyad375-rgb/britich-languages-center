@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /admin/login
+
+Sitemap: https://solimaneyad375-rgb.github.io/britich-languages-center/sitemap.xml

@@ -6,11 +6,13 @@
  */
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { User } from '../types';
+import { api } from '../services/api';
 
 interface AuthContextType {
   user: User | null;
   token: string | null;
   isAuthenticated: boolean;
+  isLoading: boolean;
   login: (token: string, user: User) => void;
   logout: () => void;
 }
@@ -18,31 +20,89 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(() => {
-    const saved = localStorage.getItem('bcl_user');
-    return saved ? JSON.parse(saved) : null;
-  });
-
+  const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(() => {
-    return localStorage.getItem('bcl_token');
+    try {
+      return sessionStorage.getItem('bcl_active_session_token');
+    } catch {
+      return null;
+    }
   });
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+
+  // Validate session on mount with real backend server
+  useEffect(() => {
+    let isMounted = true;
+
+    async function verifySession() {
+      if (token) {
+        api.setAuthToken(token);
+      }
+
+      try {
+        const result = await api.checkAuth();
+        if (isMounted) {
+          if (result && result.valid && result.user) {
+            setUser(result.user);
+          } else {
+            // Invalid or expired token
+            setToken(null);
+            setUser(null);
+            try {
+              sessionStorage.removeItem('bcl_active_session_token');
+            } catch {}
+          }
+        }
+      } catch {
+        if (isMounted) {
+          setToken(null);
+          setUser(null);
+        }
+      } finally {
+        if (isMounted) {
+          setIsLoading(false);
+        }
+      }
+    }
+
+    verifySession();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const login = (newToken: string, newUser: User) => {
     setToken(newToken);
     setUser(newUser);
-    localStorage.setItem('bcl_token', newToken);
-    localStorage.setItem('bcl_user', JSON.stringify(newUser));
+    api.setAuthToken(newToken);
+    try {
+      sessionStorage.setItem('bcl_active_session_token', newToken);
+    } catch {}
   };
 
   const logout = () => {
     setToken(null);
     setUser(null);
-    localStorage.removeItem('bcl_token');
-    localStorage.removeItem('bcl_user');
+    api.setAuthToken(null);
+    try {
+      sessionStorage.removeItem('bcl_active_session_token');
+      localStorage.removeItem('bcl_token');
+      localStorage.removeItem('bcl_user');
+    } catch {}
+    api.logout().catch(() => {});
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, isAuthenticated: !!token, login, logout }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        token,
+        isAuthenticated: !!token && !!user,
+        isLoading,
+        login,
+        logout,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
@@ -55,4 +115,3 @@ export const useAuth = (): AuthContextType => {
   }
   return context;
 };
-

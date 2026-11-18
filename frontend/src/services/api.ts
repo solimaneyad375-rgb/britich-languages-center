@@ -18,6 +18,15 @@ import {
 } from '../types';
 import { storage } from './storage';
 
+// Secure Backend API Base URL
+const API_BASE_URL =
+  (import.meta as any).env?.VITE_API_BASE_URL ||
+  (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+    ? 'http://localhost:5000/api'
+    : '/api');
+
+let activeAuthToken: string | null = null;
+
 // Default static services descriptions (the 6 core institutional services)
 const DEFAULT_SERVICES: ServiceItem[] = [
   {
@@ -285,31 +294,79 @@ export const api = {
     return { success: true, message: 'Your message has been received successfully.' };
   },
 
-  // --- Demo Login ---
+  // --- Real Server-Side Authentication ---
   async login(username: string, password: string): Promise<{ token: string; user: User } | null> {
-    await new Promise((resolve) => setTimeout(resolve, 200));
-
-    const validUser = username.trim().toLowerCase() === 'admin';
-    const validPass =
-      password === 'admin' ||
-      password === 'admin123' ||
-      password === 'AdminPassword2024!';
-
-    if (validUser && validPass) {
-      return {
-        token: 'bcl_demo_token_' + Date.now(),
-        user: {
-          id: 1,
-          username: 'admin',
-          email: 'admin@britishcenter.uk',
-          fullName: 'Chief Academic Administrator',
-          role: 'SuperAdmin',
-          createdAt: '2026-01-01T00:00:00Z',
-          lastLoginAt: new Date().toISOString(),
+    try {
+      const response = await fetch(`${API_BASE_URL}/auth/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
         },
-      };
+        credentials: 'include',
+        body: JSON.stringify({ username, password }),
+      });
+
+      if (!response.ok) {
+        return null;
+      }
+
+      const data = await response.json();
+      if (data && data.success && data.token) {
+        activeAuthToken = data.token;
+        return {
+          token: data.token,
+          user: data.user,
+        };
+      }
+      return null;
+    } catch (err) {
+      console.warn('Backend authentication server not reached.');
+      return null;
     }
-    return null;
+  },
+
+  async checkAuth(): Promise<{ valid: boolean; user?: User }> {
+    try {
+      const headers: Record<string, string> = {};
+      if (activeAuthToken) {
+        headers['Authorization'] = `Bearer ${activeAuthToken}`;
+      }
+
+      const response = await fetch(`${API_BASE_URL}/auth/me`, {
+        method: 'GET',
+        headers,
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        return { valid: false };
+      }
+
+      const data = await response.json();
+      if (data && data.success && data.user) {
+        return { valid: true, user: data.user };
+      }
+      return { valid: false };
+    } catch {
+      return { valid: false };
+    }
+  },
+
+  async logout(): Promise<void> {
+    try {
+      await fetch(`${API_BASE_URL}/auth/logout`, {
+        method: 'POST',
+        credentials: 'include',
+      });
+    } catch {
+      // Ignore network failures on logout
+    } finally {
+      activeAuthToken = null;
+    }
+  },
+
+  setAuthToken(token: string | null) {
+    activeAuthToken = token;
   },
 };
 

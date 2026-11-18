@@ -326,7 +326,7 @@ export const ServicesSection: React.FC = () => {
           {/* SERVICE 02: Staff Training and Qualification (Featuring professional training room image) */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-center text-start">
             <div className="lg:col-span-6 order-2 lg:order-1">
-              <div className="relative overflow-hidden rounded-xs border border-gray-200 dark:border-[rgba(197,160,75,0.35)] shadow-xl bg-slate-100 dark:bg-[#152B49] group aspect-[16/11]">
+              <div className="relative overflow-hidden rounded-xs border border-gray-200 dark:border-[rgba(197,160,75,0.35)] shadow-xl bg-slate-100 dark:bg-[#152B49] group aspect-[16/9]">
                 <img
                   src={getAssetUrl('assets/editorial/training-room.webp')}
                   alt={lang === 'ar' ? 'برامج التدريب والتأهيل المهني والمؤسسي' : 'Professional Training Programs - Educational Staff Qualification'}
@@ -338,8 +338,8 @@ export const ServicesSection: React.FC = () => {
                     (e.target as HTMLImageElement).src = getAssetUrl('assets/editorial/training-room.jpg');
                   }}
                 />
-                <div className="absolute bottom-0 inset-x-0 bg-white/95 dark:bg-[#08182E]/95 backdrop-blur-xs px-4 py-2 border-t border-gray-200 dark:border-[rgba(197,160,75,0.22)] flex items-center justify-between text-[11px] text-slate-600 dark:text-[#B8C5D6] font-mono">
-                  <span className="tracking-wider">{lang === 'ar' ? 'تأهيل وتطوير المدربين' : 'STAFF TRAINING WORKSHOP'}</span>
+                <div className="absolute bottom-0 inset-x-0 bg-white/95 dark:bg-[#08182E]/95 backdrop-blur-xs px-4 py-2.5 border-t border-gray-200 dark:border-[rgba(197,160,75,0.22)] flex items-center justify-between text-xs sm:text-sm text-slate-700 dark:text-[#D5E0EE] font-medium">
+                  <span className="tracking-wide">{lang === 'ar' ? 'تأهيل وتطوير المدربين' : 'STAFF TRAINING WORKSHOP'}</span>
                   <span className="text-[#C5A04B] dark:text-[#DFC075] font-semibold">TOT MASTERCLASS</span>
                 </div>
               </div>

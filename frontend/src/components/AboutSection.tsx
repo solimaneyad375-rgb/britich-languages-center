@@ -1,3 +1,4 @@
+// Developed by Eng. Eyad — SpeedUp Software.
 /*
  * Developed & Engineered by Eng. Eyad Ahmed
  * SpeedUp Software Solutions
@@ -148,7 +149,7 @@ export const AboutSection: React.FC = () => {
                 <h3 className="text-sm font-bold text-[#102F5C] dark:text-white">
                   {lang === 'ar' ? 'المرجعية الأكاديمية والمهنية' : 'Academic & Professional Benchmark'}
                 </h3>
-                <p className="text-xs text-slate-600 dark:text-[#B8C5D6] leading-relaxed font-normal">
+                <p className="text-sm text-slate-600 dark:text-[#B8C5D6] leading-relaxed font-normal">
                   {lang === 'ar'
                     ? 'أن نكون المرجع الأكاديمي والمهني الرائد في التطوير المؤسسي وتأهيل الكفاءات لغوياً وإدارياً بمعايير موثوقة.'
                     : 'To be the foremost academic benchmark in professional empowerment, linguistic development, and institutional quality.'}
@@ -160,10 +161,10 @@ export const AboutSection: React.FC = () => {
                 <span className="text-xs font-mono font-bold text-[#C5A04B] dark:text-[#DFC075] uppercase tracking-wider block">
                   {lang === 'ar' ? 'رسالتنا' : 'Our Mission'}
                 </span>
-                <h3 className="text-sm font-bold text-[#102F5C] dark:text-white">
+                <h3 className="text-base font-bold text-[#102F5C] dark:text-white">
                   {lang === 'ar' ? 'بيئة تعليمية متكاملة' : 'Integrated Learning Environment'}
                 </h3>
-                <p className="text-xs text-slate-600 dark:text-[#B8C5D6] leading-relaxed font-normal">
+                <p className="text-sm text-slate-600 dark:text-[#B8C5D6] leading-relaxed font-normal">
                   {lang === 'ar'
                     ? 'تقديم بيئة تعليمية متكاملة تسهم في تمكين الأفراد والمؤسسات، وترسيخ ثقافة الجودة والاعتماد الأكاديمي المنضبط.'
                     : 'Delivering structured academic pathways that empower leaders, foster institutional rigor, and enforce transparent accreditation.'}
@@ -198,10 +199,10 @@ export const AboutSection: React.FC = () => {
                       {val.number}
                     </span>
                   </div>
-                  <h4 className="text-sm font-bold text-[#102F5C] dark:text-white">
+                  <h4 className="text-base font-bold text-[#102F5C] dark:text-white">
                     {lang === 'ar' ? val.titleAr : val.titleEn}
                   </h4>
-                  <p className="text-xs text-slate-600 dark:text-[#B8C5D6] leading-relaxed font-normal">
+                  <p className="text-sm text-slate-600 dark:text-[#B8C5D6] leading-relaxed font-normal">
                     {lang === 'ar' ? val.descAr : val.descEn}
                   </p>
                 </div>

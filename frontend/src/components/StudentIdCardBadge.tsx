@@ -1,3 +1,4 @@
+// Developed by Eng. Eyad — SpeedUp Software.
 /*
  * Developed & Engineered by Eng. Eyad Ahmed
  * SpeedUp Software Solutions
@@ -8,7 +9,7 @@ import { useLanguage } from '../context/LanguageContext';
 import { StudentIdCard } from '../types';
 import { ShieldCheck, Printer, Award, UserCheck, Calendar } from 'lucide-react';
 import QRCode from 'qrcode';
-import { getAssetUrl } from '../utils/assets';
+import { getAssetUrl, getVerifyUrl } from '../utils/assets';
 
 interface StudentIdCardBadgeProps {
   card: StudentIdCard;
@@ -20,7 +21,7 @@ export const StudentIdCardBadge: React.FC<StudentIdCardBadgeProps> = ({ card }) 
 
   useEffect(() => {
     if (qrCanvasRef.current) {
-      const verifyUrl = `${window.location.origin}/verify?certificate=${encodeURIComponent(card.studentIdNumber)}`;
+      const verifyUrl = getVerifyUrl(card.studentIdNumber);
       QRCode.toCanvas(
         qrCanvasRef.current,
         verifyUrl,

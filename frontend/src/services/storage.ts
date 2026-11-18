@@ -1,6 +1,6 @@
+// Developed by Eng. Eyad — SpeedUp Software.
 /*
- * Project Design & Development
- * Engineered by Eng. Eyad Ahmed
+ * Developed & Engineered by Eng. Eyad Ahmed
  * SpeedUp Software Solutions
  * © 2026 All Rights Reserved.
  */
@@ -16,6 +16,7 @@ import {
   ActivityLog,
   StudentIdCard,
 } from '../types';
+import { getVerifyUrl } from '../utils/assets';
 
 const STORAGE_KEYS = {
   STUDENTS: 'bcl_students_data',
@@ -596,7 +597,7 @@ class StorageService {
     }
 
     const student = students.find((s) => s.id === cert.studentId);
-    const qrUrl = `${window.location.origin}/verify?certificate=${encodeURIComponent(cert.certificateNumber)}`;
+    const qrUrl = getVerifyUrl(cert.certificateNumber);
 
     if (cert.status === 'Revoked') {
       this.logActivity(
@@ -895,7 +896,7 @@ class StorageService {
         .split('T')[0],
       status: s.status === 'Active' ? 'Active' : s.status,
       barcode: `*${s.studentIdNumber}*`,
-      qrCodeUrl: `${window.location.origin}/verify?certificate=${encodeURIComponent(s.studentIdNumber)}`,
+      qrCodeUrl: getVerifyUrl(s.studentIdNumber),
     }));
   }
 }

@@ -1,3 +1,4 @@
+// Developed by Eng. Eyad — SpeedUp Software.
 /*
  * Developed & Engineered by Eng. Eyad Ahmed
  * SpeedUp Software Solutions
@@ -7,7 +8,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import { api } from '../services/api';
 import { PublicVerificationResponse } from '../types';
-import { getAssetUrl } from '../utils/assets';
+import { getAssetUrl, getVerifyUrl } from '../utils/assets';
 import {
   ShieldCheck,
   Search,
@@ -112,7 +113,7 @@ export const VerifyPage: React.FC<VerifyPageProps> = ({ initialQuery = '', navig
     if (result && result.isFound && qrCanvasRef.current) {
       const targetUrl =
         result.qrVerificationUrl ||
-        `${window.location.origin}/verify?certificate=${encodeURIComponent(result.certificateNumber || '')}`;
+        getVerifyUrl(result.certificateNumber || '');
       QRCode.toCanvas(
         qrCanvasRef.current,
         targetUrl,

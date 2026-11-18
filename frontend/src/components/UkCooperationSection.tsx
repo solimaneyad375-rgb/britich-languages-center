@@ -44,22 +44,22 @@ export const UkCooperationSection: React.FC = () => {
             </div>
 
             <div>
-              <span className="text-[11px] uppercase tracking-wider text-slate-500 dark:text-slate-300 block mb-1">
+              <span className="text-xs uppercase tracking-wider text-slate-500 dark:text-slate-300 block mb-1 font-semibold">
                 {lang === 'ar' ? 'جهة التعاون بالمملكة المتحدة' : 'UK Educational Partner'}
               </span>
-              <h3 className="text-lg font-bold text-[#102F5C] dark:text-white leading-snug">
+              <h3 className="text-lg sm:text-xl font-bold text-[#102F5C] dark:text-white leading-snug">
                 UK International Education & Training
               </h3>
             </div>
 
-            <p className="text-xs sm:text-sm text-slate-600 dark:text-[#B8C5D6] leading-relaxed font-normal">
+            <p className="text-sm text-slate-600 dark:text-[#B8C5D6] leading-relaxed font-normal">
               {lang === 'ar'
                 ? 'جهة التعاون الأكاديمي والتدريبي بالمملكة المتحدة، وتعمل وفق إطار اتفاقيات التعاون المؤسسي وتبادل الخبرات وتطوير المناهج التعليمية.'
                 : 'Strategic partner for international educational cooperation, operating under formal institutional agreements to advance curriculum standards and training exchange.'}
             </p>
 
-            <div className="pt-3 border-t border-gray-200 dark:border-white/10 text-xs text-[#C5A04B] dark:text-[#DFC075] font-mono">
-              <span>AGREEMENT PROTOCOL • ACTIVE</span>
+            <div className="pt-3 border-t border-gray-200 dark:border-white/10 text-xs text-[#C5A04B] dark:text-[#DFC075] font-semibold">
+              <span>{lang === 'ar' ? 'إطار اتفاقية مؤسسية رسمية' : 'Official Institutional Partnership Framework'}</span>
             </div>
           </div>
 
@@ -71,7 +71,7 @@ export const UkCooperationSection: React.FC = () => {
             </div>
 
             <div>
-              <span className="text-[11px] uppercase tracking-wider text-slate-500 dark:text-slate-300 block mb-1">
+              <span className="text-xs uppercase tracking-wider text-slate-500 dark:text-slate-300 block mb-1 font-semibold">
                 {lang === 'ar' ? 'السجل التجاري للشركات (إنجلترا وويلز)' : 'Companies House Registration Number'}
               </span>
               <h3 className="text-2xl font-bold font-mono text-[#C5A04B] dark:text-[#DFC075] tracking-wider">
@@ -79,7 +79,7 @@ export const UkCooperationSection: React.FC = () => {
               </h3>
             </div>
 
-            <p className="text-xs sm:text-sm text-slate-600 dark:text-[#B8C5D6] leading-relaxed font-normal">
+            <p className="text-sm text-slate-600 dark:text-[#B8C5D6] leading-relaxed font-normal">
               {lang === 'ar'
                 ? 'مسجل رسمياً في السجل التجاري بالمملكة المتحدة (Companies House) ككيان قانوني موثق ومسجل في إنجلترا وويلز.'
                 : 'Officially incorporated and registered with Companies House (Registrar of Companies for England and Wales) as an incorporated legal entity.'}
@@ -98,7 +98,7 @@ export const UkCooperationSection: React.FC = () => {
             </div>
 
             <div>
-              <span className="text-[11px] uppercase tracking-wider text-slate-500 dark:text-slate-300 block mb-1">
+              <span className="text-xs uppercase tracking-wider text-slate-500 dark:text-slate-300 block mb-1 font-semibold">
                 {lang === 'ar' ? 'سجل مزودي التعلم بالمملكة المتحدة (UKRLP)' : 'UK Register of Learning Providers (UKRLP)'}
               </span>
               <h3 className="text-2xl font-bold font-mono text-[#C5A04B] dark:text-[#DFC075] tracking-wider">
@@ -106,7 +106,7 @@ export const UkCooperationSection: React.FC = () => {
               </h3>
             </div>
 
-            <p className="text-xs sm:text-sm text-slate-600 dark:text-[#B8C5D6] leading-relaxed font-normal">
+            <p className="text-sm text-slate-600 dark:text-[#B8C5D6] leading-relaxed font-normal">
               {lang === 'ar'
                 ? 'مقيد في سجل مزودي التعلم بالمملكة المتحدة (UKRLP) بالرقم المرجعي الرسمي لمزودي التعليم والتدريب (UKPRN: 10099520).'
                 : 'Listed in the UK Register of Learning Providers (UKRLP) with official UK Provider Reference Number (UKPRN: 10099520).'}
@@ -119,8 +119,8 @@ export const UkCooperationSection: React.FC = () => {
         </div>
 
         {/* Factual Institutional Clarification Notice */}
-        <div className="mt-10 p-5 bg-slate-50 dark:bg-[#152B49] border border-gray-200 dark:border-[rgba(197,160,75,0.22)] text-slate-600 dark:text-slate-300 text-xs leading-relaxed text-start max-w-4xl space-y-1 rounded-xs">
-          <strong className="text-[#C5A04B] dark:text-[#DFC075] block font-semibold">
+        <div className="mt-10 p-5 bg-slate-50 dark:bg-[#152B49] border border-gray-200 dark:border-[rgba(197,160,75,0.22)] text-slate-700 dark:text-slate-200 text-xs sm:text-sm leading-relaxed text-start max-w-4xl space-y-2 rounded-xs">
+          <strong className="text-[#C5A04B] dark:text-[#DFC075] block font-semibold text-sm">
             {lang === 'ar' ? 'بيان الشفافية القانونية والتنظيمية:' : 'Regulatory & Transparency Notice:'}
           </strong>
           <p className="text-slate-600 dark:text-[#B8C5D6]">

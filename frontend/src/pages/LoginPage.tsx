@@ -1,5 +1,6 @@
 /*
- * Developed & Engineered by Eng. Eyad Ahmed
+ * Project Design & Development
+ * Engineered by Eng. Eyad Ahmed
  * SpeedUp Software Solutions
  * © 2026 All Rights Reserved.
  */
@@ -8,7 +9,7 @@ import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
 import { api } from '../services/api';
-import { Lock, User, ShieldCheck, ArrowRight, ArrowLeft, AlertCircle } from 'lucide-react';
+import { Lock, User, ShieldCheck, ArrowRight, ArrowLeft, Eye, EyeOff, AlertTriangle } from 'lucide-react';
 import { getAssetUrl } from '../utils/assets';
 
 interface LoginPageProps {
@@ -20,25 +21,34 @@ export const LoginPage: React.FC<LoginPageProps> = ({ navigate: propNavigate }) 
   const navigate = propNavigate || routerNavigate;
   const { lang, isRtl, t } = useLanguage();
   const { login } = useAuth();
-  const [username, setUsername] = useState('admin');
-  const [password, setPassword] = useState('admin');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+
+    const trimmedUser = username.trim();
+    if (!trimmedUser || !password) {
+      setError(lang === 'ar' ? 'يرجى إدخال اسم المستخدم وكلمة المرور' : 'Please enter both username and password.');
+      return;
+    }
+
     setLoading(true);
 
     try {
-      const res = await api.login(username, password);
-      if (res) {
+      const res = await api.login(trimmedUser, password);
+      if (res && res.user) {
         login(res.token, res.user);
         navigate('/admin');
       } else {
         setError(t('loginError'));
       }
-    } catch (err) {
+    } catch (err: any) {
+      console.error('Authentication failure');
       setError(t('loginError'));
     } finally {
       setLoading(false);
@@ -50,10 +60,10 @@ export const LoginPage: React.FC<LoginPageProps> = ({ navigate: propNavigate }) 
   return (
     <div className="pt-24 min-h-screen bg-white dark:bg-[#08182E] flex items-center justify-center px-4 pb-20 text-[#102F5C] dark:text-white transition-colors duration-200">
       <div className="max-w-md w-full bg-[#F7F8FA] dark:bg-[#152B49] rounded-xs shadow-xl dark:shadow-2xl border border-gray-200 dark:border-[rgba(197,160,75,0.35)] p-7 sm:p-9 text-start space-y-6 transition-colors">
-        {/* Header with Crest */}
+        {/* Header with Institutional Crest */}
         <div className="text-center space-y-3">
           <div className="relative inline-flex items-center justify-center p-[1px] rounded-xs bg-gradient-to-b from-[#C5A04B]/60 via-[rgba(197,160,75,0.3)] to-[#C5A04B]/60 shadow-xs mx-auto">
-            <div className="bg-[#FAF8F5] px-3 py-1.5 rounded-[2px] flex items-center justify-center">
+            <div className="bg-[#FAF8F5] px-3.5 py-2 rounded-[2px] flex items-center justify-center">
               <img
                 src={getAssetUrl('assets/logo-trimmed.webp')}
                 alt="British Center for Languages"
@@ -67,83 +77,73 @@ export const LoginPage: React.FC<LoginPageProps> = ({ navigate: propNavigate }) 
               />
             </div>
           </div>
-          <div>
+          <div className="space-y-1">
             <h2 className="text-xl sm:text-2xl font-bold text-[#102F5C] dark:text-white font-serif">
-              {t('loginTitle')}
+              {lang === 'ar' ? 'دخول البوابة الإدارية' : 'Institutional Administration Login'}
             </h2>
-            <p className="text-xs text-slate-600 dark:text-[#B8C5D6] mt-1">
-              {t('loginSubtitle')}
+            <p className="text-xs text-slate-600 dark:text-[#B8C5D6] leading-relaxed">
+              {lang === 'ar'
+                ? 'الوصول مصرح به فقط لمسؤولي المركز البريطاني المعتمدين'
+                : 'Authorized access strictly restricted to certified British Center personnel'}
             </p>
           </div>
         </div>
 
-        {/* Demo Authentication Security Disclosure */}
-        <div className="p-3.5 rounded-xs bg-amber-50 dark:bg-[#08182E]/90 border border-amber-300 dark:border-[rgba(197,160,75,0.4)] text-[11px] text-amber-900 dark:text-[#DFC075] space-y-1">
-          <div className="flex items-center gap-1.5 font-bold text-xs text-amber-800 dark:text-[#DFC075]">
-            <AlertCircle className="w-4 h-4 text-[#C5A04B] shrink-0" />
-            <span>
-              {lang === 'ar' ? 'إشعار أمني (Frontend Demo Authentication):' : 'Security Notice (Demo Prototype):'}
-            </span>
-          </div>
-          <p className="text-[10.5px] text-slate-600 dark:text-[#B8C5D6] leading-relaxed">
-            {lang === 'ar'
-              ? 'تنبيه: هذا نموذج تجريبي لواجهة المستخدم (Frontend-only Authentication) مخصص للمعاينة الإدارية وتجربة إدارة الشهادات. لا يمثل نظام حماية إنتاجي مشفر.'
-              : 'Notice: This is a frontend-only demonstration authentication system intended for evaluation and prototype testing. It does not provide production-grade cryptographic security.'}
-          </p>
-        </div>
-
+        {/* Generic Error Alert */}
         {error && (
-          <div className="p-3 rounded-xs bg-rose-50 dark:bg-rose-950/60 text-rose-700 dark:text-rose-200 text-xs font-bold border border-rose-300 dark:border-rose-500/60">
-            {error}
+          <div className="p-3.5 rounded-xs bg-rose-50 dark:bg-rose-950/70 text-rose-700 dark:text-rose-200 text-xs sm:text-sm font-semibold border border-rose-300 dark:border-rose-500/60 flex items-center gap-2">
+            <AlertTriangle className="w-4 h-4 shrink-0 text-rose-500" />
+            <span>{error}</span>
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-5" autoComplete="off">
           <div>
-            <label className="block text-xs font-bold text-[#102F5C] dark:text-[#DFC075] mb-1">
+            <label className="block text-xs font-bold text-[#102F5C] dark:text-[#DFC075] mb-1.5">
               {t('loginUsername')}
             </label>
             <div className="relative">
-              <div className="absolute inset-y-0 start-0 ps-3 flex items-center pointer-events-none text-slate-400">
+              <div className="absolute inset-y-0 start-0 ps-3.5 flex items-center pointer-events-none text-slate-400">
                 <User className="w-4 h-4 text-[#C5A04B]" />
               </div>
               <input
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                className="w-full ps-9 pe-3 py-2.5 rounded-xs bg-white dark:bg-[#08182E] border border-gray-300 dark:border-[rgba(197,160,75,0.3)] text-[#102F5C] dark:text-white text-xs font-semibold focus:border-[#C5A04B] focus:outline-none"
+                placeholder={lang === 'ar' ? 'اسم المستخدم المعتمد' : 'Enter authorized username'}
+                autoComplete="off"
+                className="w-full ps-10 pe-3 py-2.5 rounded-xs bg-white dark:bg-[#08182E] border border-gray-300 dark:border-[rgba(197,160,75,0.3)] text-[#102F5C] dark:text-white text-xs sm:text-sm font-medium focus:border-[#C5A04B] focus:outline-none transition-colors"
                 required
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-[#102F5C] dark:text-[#DFC075] mb-1">
+            <label className="block text-xs font-bold text-[#102F5C] dark:text-[#DFC075] mb-1.5">
               {t('loginPassword')}
             </label>
             <div className="relative">
-              <div className="absolute inset-y-0 start-0 ps-3 flex items-center pointer-events-none text-slate-400">
+              <div className="absolute inset-y-0 start-0 ps-3.5 flex items-center pointer-events-none text-slate-400">
                 <Lock className="w-4 h-4 text-[#C5A04B]" />
               </div>
               <input
-                type="password"
+                type={showPassword ? 'text' : 'password'}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full ps-9 pe-3 py-2.5 rounded-xs bg-white dark:bg-[#08182E] border border-gray-300 dark:border-[rgba(197,160,75,0.3)] text-[#102F5C] dark:text-white text-xs font-semibold focus:border-[#C5A04B] focus:outline-none"
+                placeholder="••••••••••••"
+                autoComplete="new-password"
+                className="w-full ps-10 pe-10 py-2.5 rounded-xs bg-white dark:bg-[#08182E] border border-gray-300 dark:border-[rgba(197,160,75,0.3)] text-[#102F5C] dark:text-white text-xs sm:text-sm font-medium focus:border-[#C5A04B] focus:outline-none transition-colors"
                 required
               />
-            </div>
-          </div>
-
-          {/* Quick Default Credentials Note */}
-          <div className="p-3 rounded-xs bg-white dark:bg-[#08182E] border border-gray-200 dark:border-[rgba(197,160,75,0.25)] text-[11px] text-slate-600 dark:text-[#B8C5D6] space-y-1">
-            <span className="font-bold flex items-center gap-1.5 text-[#102F5C] dark:text-[#DFC075]">
-              <ShieldCheck className="w-3.5 h-3.5 text-[#C5A04B]" />
-              {lang === 'ar' ? 'بيانات الدخول الافتراضية للتجربة:' : 'Demo Access Credentials:'}
-            </span>
-            <div className="flex justify-between font-mono bg-[#F7F8FA] dark:bg-[#152B49] p-2 rounded-xs border border-gray-200 dark:border-[rgba(197,160,75,0.2)] text-xs text-[#102F5C] dark:text-white">
-              <span>Username: <strong className="text-[#C5A04B] dark:text-[#DFC075]">admin</strong></span>
-              <span>Password: <strong className="text-[#C5A04B] dark:text-[#DFC075]">admin</strong></span>
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                tabIndex={-1}
+                className="absolute inset-y-0 end-0 pe-3.5 flex items-center text-slate-400 hover:text-[#C5A04B] transition-colors cursor-pointer"
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
+              >
+                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
             </div>
           </div>
 
@@ -167,4 +167,3 @@ export const LoginPage: React.FC<LoginPageProps> = ({ navigate: propNavigate }) 
     </div>
   );
 };
-

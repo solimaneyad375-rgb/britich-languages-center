@@ -1,3 +1,4 @@
+// Developed by Eng. Eyad — SpeedUp Software.
 /*
  * Developed & Engineered by Eng. Eyad Ahmed
  * SpeedUp Software Solutions
@@ -98,7 +99,7 @@ export const Hero: React.FC<HeroProps> = ({ navigate: propNavigate }) => {
                 navigate('/services');
                 window.scrollTo({ top: 0, behavior: 'smooth' });
               }}
-              className="h-12 sm:h-13 px-7 sm:px-8 bg-[#C9A347] hover:bg-[#DFC075] text-[#07182D] text-xs sm:text-sm font-bold rounded-xs shadow-lg shadow-[#C9A347]/20 hover:shadow-[#C9A347]/35 transition-all duration-200 inline-flex items-center justify-center gap-2.5 cursor-pointer transform hover:-translate-y-0.5"
+              className="h-12 sm:h-13 px-7 sm:px-8 bg-[#C9A347] hover:bg-[#DFC075] text-[#07182D] text-sm sm:text-base font-bold rounded-xs shadow-lg shadow-[#C9A347]/20 hover:shadow-[#C9A347]/35 transition-all duration-200 inline-flex items-center justify-center gap-2.5 cursor-pointer transform hover:-translate-y-0.5"
             >
               <span>{lang === 'ar' ? 'اكتشف خدماتنا' : 'Explore Our Services'}</span>
               <ArrowIcon className="w-4 h-4 text-[#07182D]" />
@@ -110,7 +111,7 @@ export const Hero: React.FC<HeroProps> = ({ navigate: propNavigate }) => {
                 navigate('/verify');
                 window.scrollTo({ top: 0, behavior: 'smooth' });
               }}
-              className="h-12 sm:h-13 px-6 sm:px-7 bg-[#07182D]/70 hover:bg-[#102B4C]/80 border border-[#C9A34A]/70 hover:border-[#C9A34A] text-[#F8F9FC] hover:text-[#DFC075] text-xs sm:text-sm font-semibold rounded-xs backdrop-blur-xs transition-all duration-200 inline-flex items-center justify-center gap-2 cursor-pointer shadow-md"
+              className="h-12 sm:h-13 px-6 sm:px-7 bg-[#07182D]/70 hover:bg-[#102B4C]/80 border border-[#C9A34A]/70 hover:border-[#C9A34A] text-[#F8F9FC] hover:text-[#DFC075] text-sm sm:text-base font-semibold rounded-xs backdrop-blur-xs transition-all duration-200 inline-flex items-center justify-center gap-2 cursor-pointer shadow-md"
             >
               <ShieldCheck className="w-4 h-4 text-[#DFC075]" />
               <span>{lang === 'ar' ? 'التحقق من الشهادات' : 'Verify Certificates'}</span>

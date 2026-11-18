@@ -1,6 +1,6 @@
+// Developed by Eng. Eyad — SpeedUp Software.
 /*
- * Project Design & Development
- * Engineered by Eng. Eyad Ahmed
+ * Developed & Engineered by Eng. Eyad Ahmed
  * SpeedUp Software Solutions
  * © 2026 All Rights Reserved.
  */
@@ -17,7 +17,6 @@ import {
   QrCode,
   ArrowRight,
   ArrowLeft,
-  Sparkles,
   CheckCircle2,
   FileCheck2,
   ExternalLink
@@ -47,27 +46,20 @@ export const HomepageCertificateShowcase: React.FC = () => {
 
   return (
     <section className="relative py-20 sm:py-24 bg-[#08182E] text-white overflow-hidden border-t border-b border-[rgba(197,160,75,0.22)]">
-      {/* Background Decorative Ambient Glows */}
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[350px] bg-gradient-to-b from-[#C5A04B]/10 via-[#102F5C]/15 to-transparent blur-3xl rounded-full" />
-        <div className="absolute bottom-10 -left-20 w-80 h-80 bg-[#102F5C]/30 blur-2xl rounded-full" />
-        <div className="absolute top-10 -right-20 w-80 h-80 bg-[#C5A04B]/10 blur-2xl rounded-full" />
-      </div>
-
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* 1. SECTION HEADER */}
         <div className="text-center max-w-3xl mx-auto space-y-4 mb-12 sm:mb-16">
-          {/* Sample Design Badge */}
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#C5A04B]/15 border border-[#C5A04B]/35 shadow-xs">
-            <Sparkles className="w-3.5 h-3.5 text-[#DFC075]" />
-            <span className="text-[11px] sm:text-xs font-mono font-bold tracking-widest text-[#DFC075] uppercase">
-              SAMPLE DESIGN — نموذج توضيحي
+          {/* Official Specimen Badge */}
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-xs bg-[#102F5C]/80 border border-[#C5A04B]/40">
+            <Award className="w-4 h-4 text-[#DFC075]" />
+            <span className="text-xs font-semibold tracking-wider text-[#DFC075] uppercase">
+              {lang === 'ar' ? 'وثيقة اعتماد رسمية — نموذج توضيحي' : 'Official Credential Specimen'}
             </span>
           </div>
 
           {/* Section Main Titles */}
           <div className="space-y-2">
-            <span className="text-xs sm:text-sm font-mono font-bold tracking-[0.25em] text-[#C5A04B] uppercase block">
+            <span className="text-xs sm:text-sm font-semibold tracking-[0.2em] text-[#C5A04B] uppercase block">
               ACADEMIC CERTIFICATES & CREDENTIALS
             </span>
             <h2 className="text-2xl sm:text-4xl lg:text-5xl font-bold font-serif text-white tracking-tight leading-tight">
@@ -76,7 +68,7 @@ export const HomepageCertificateShowcase: React.FC = () => {
           </div>
 
           {/* Editorial Introduction */}
-          <p className="text-sm sm:text-base text-slate-300 max-w-2xl mx-auto leading-relaxed font-normal">
+          <p className="text-base text-slate-300 max-w-2xl mx-auto leading-relaxed font-normal">
             {lang === 'ar'
               ? 'تصدر جميع شهادات ودبلومات المركز البريطاني لتعليم اللغات وفق معايير الجودة والتوثيق الأكاديمي المعتمدة، مع تزويد كل وثيقة بختم مؤسسي بارز ورمز استجابة سريع (QR Code) مشفر للتحقق الفوري المباشر.'
               : 'All credentials and diplomas awarded by the British Center for Languages adhere to rigorous UK academic standards, featuring an embossed institutional gold seal and cryptographic QR verification for real-time validation.'}
@@ -85,16 +77,16 @@ export const HomepageCertificateShowcase: React.FC = () => {
 
         {/* 2. PROMINENT CERTIFICATE SHOWCASE CONTAINER */}
         <div className="max-w-5xl mx-auto">
-          {/* Frame Container with Gold Border Glow and Hover Interaction */}
+          {/* Frame Container with Gold Border and Clean Hover Interaction */}
           <div
             onClick={() => setIsModalOpen(true)}
-            className="group relative rounded-lg p-2.5 sm:p-5 bg-gradient-to-b from-[#112746]/80 via-[#0B1F3A]/90 to-[#08182E] border border-[#C5A04B]/35 hover:border-[#C5A04B]/70 shadow-2xl transition-all duration-300 cursor-pointer backdrop-blur-xs"
+            className="group relative rounded-xs p-3 sm:p-5 bg-[#0B1F3A] border border-[#C5A04B]/35 hover:border-[#C5A04B]/80 shadow-2xl transition-all duration-300 cursor-pointer"
           >
             {/* Top Toolbar / Status Indicators */}
             <div className="flex items-center justify-between pb-3 px-1 border-b border-[#C5A04B]/20 mb-4 text-xs font-mono">
               <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                <span className="text-[#DFC075] font-semibold text-[11px] sm:text-xs tracking-wider uppercase">
+                <ShieldCheck className="w-4 h-4 text-[#C5A04B]" />
+                <span className="text-[#DFC075] font-semibold text-xs tracking-wider uppercase">
                   {lang === 'ar' ? 'نموذج وثيقة التخرج الرسمية (A4 Landscape)' : 'Official Graduate Credential Specimen (A4 Landscape)'}
                 </span>
               </div>
