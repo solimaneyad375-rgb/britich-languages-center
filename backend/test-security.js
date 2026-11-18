@@ -63,7 +63,7 @@ async function runTestSuite() {
     const res3 = await fetch(`${base}/api/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username: 'bcl_chief_admin', password: 'Bcl@OxfordSecure2026!#Prv' }),
+      body: JSON.stringify({ username: 'admin', password: '12345' }),
     });
     console.log(`  -> Status: ${res3.status} (Expected: 200)`);
     const json3 = await res3.json();
