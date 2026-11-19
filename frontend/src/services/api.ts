@@ -306,6 +306,9 @@ export const api = {
 
   // --- Real Server-Side Authentication ---
   async login(username: string, password: string): Promise<{ token: string; user: User } | null> {
+    const trimmedUser = username.trim().toLowerCase();
+
+    // 1. Attempt real server-side authentication endpoint
     try {
       const response = await fetch(`${API_BASE_URL}/auth/login`, {
         method: 'POST',
@@ -316,39 +319,43 @@ export const api = {
         body: JSON.stringify({ username, password }),
       });
 
-      if (!response.ok) {
+      if (response.ok) {
+        const data = await response.json();
+        if (data && data.success && data.token) {
+          activeAuthToken = data.token;
+          return {
+            token: data.token,
+            user: data.user,
+          };
+        }
+      } else if (response.status === 401 || response.status === 403) {
+        // Explicit invalid credentials from active backend server
         return null;
       }
-
-      const data = await response.json();
-      if (data && data.success && data.token) {
-        activeAuthToken = data.token;
-        return {
-          token: data.token,
-          user: data.user,
-        };
-      }
-      return null;
+      // If 404 or 405 (static host like GitHub Pages where /api/auth/login does not exist), fall through
     } catch (err) {
-      // Seamless static deployment fallback (e.g., GitHub Pages without backend server)
-      if (username.trim().toLowerCase() === 'admin' && password === '12345') {
-        const sessionToken = 'bcl_sec_session_' + Date.now();
-        activeAuthToken = sessionToken;
-        return {
-          token: sessionToken,
-          user: {
-            id: 1,
-            username: 'admin',
-            fullName: 'Chief Academic Administrator',
-            role: 'SuperAdmin',
-            email: 'admin@britishcenter.uk',
-            createdAt: '2026-01-01T00:00:00Z',
-            lastLoginAt: new Date().toISOString(),
-          },
-        };
-      }
-      return null;
+      // Network failure / offline: fall through
     }
+
+    // 2. Seamless Static Hosting Fallback (e.g. GitHub Pages without Node daemon)
+    if (trimmedUser === 'admin' && password === '12345') {
+      const sessionToken = 'bcl_sec_session_' + Date.now();
+      activeAuthToken = sessionToken;
+      return {
+        token: sessionToken,
+        user: {
+          id: 1,
+          username: 'admin',
+          fullName: 'Chief Academic Administrator',
+          role: 'SuperAdmin',
+          email: 'admin@britishcenter.uk',
+          createdAt: '2026-01-01T00:00:00Z',
+          lastLoginAt: new Date().toISOString(),
+        },
+      };
+    }
+
+    return null;
   },
 
   async checkAuth(): Promise<{ valid: boolean; user?: User }> {
@@ -364,31 +371,35 @@ export const api = {
         credentials: 'include',
       });
 
-      if (!response.ok) {
+      if (response.ok) {
+        const data = await response.json();
+        if (data && data.success && data.user) {
+          return { valid: true, user: data.user };
+        }
+      } else if (response.status === 401 || response.status === 403) {
         return { valid: false };
       }
-
-      const data = await response.json();
-      if (data && data.success && data.user) {
-        return { valid: true, user: data.user };
-      }
-      return { valid: false };
     } catch {
-      if (activeAuthToken) {
-        return {
-          valid: true,
-          user: {
-            id: 1,
-            username: 'admin',
-            fullName: 'Chief Academic Administrator',
-            role: 'SuperAdmin',
-            email: 'admin@britishcenter.uk',
-            createdAt: '2026-01-01T00:00:00Z',
-          },
-        };
-      }
-      return { valid: false };
+      // Fall through on static host
     }
+
+    // Static host fallback when a valid session token exists
+    if (activeAuthToken && activeAuthToken.startsWith('bcl_sec_session_')) {
+      return {
+        valid: true,
+        user: {
+          id: 1,
+          username: 'admin',
+          fullName: 'Chief Academic Administrator',
+          role: 'SuperAdmin',
+          email: 'admin@britishcenter.uk',
+          createdAt: '2026-01-01T00:00:00Z',
+          lastLoginAt: new Date().toISOString(),
+        },
+      };
+    }
+
+    return { valid: false };
   },
 
   async logout(): Promise<void> {
