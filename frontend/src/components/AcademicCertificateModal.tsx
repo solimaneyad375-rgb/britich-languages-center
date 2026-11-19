@@ -116,43 +116,50 @@ export const AcademicCertificateModal: React.FC<AcademicCertificateModalProps> =
   };
 
   const handleDownloadPdf = async () => {
-    if (!certificateRef.current) return;
     setIsExporting(true);
     try {
-      const element = certificateRef.current;
-      const targetNode = element.querySelector<HTMLElement>('[data-certificate-node="true"]') || element;
-      const canvas = await html2canvas(targetNode, {
-        scale: 2,
-        useCORS: true,
-        logging: false,
-        backgroundColor: '#FAF8F2',
-        windowWidth: 1120,
-        windowHeight: 792,
-        onclone: (clonedDoc) => {
-          const cert = clonedDoc.querySelector<HTMLElement>('[data-certificate-node="true"]');
-          if (cert) {
-            cert.style.transform = 'none';
-            cert.style.width = '1120px';
-            cert.style.height = '792px';
-            cert.style.minWidth = '1120px';
-            cert.style.minHeight = '792px';
+      // 1. Try to directly draw the high-resolution certificate image onto a canvas for pristine 300 DPI output
+      const certImg = certificateRef.current?.querySelector<HTMLImageElement>('img');
+      let imgData = '';
+      if (certImg && certImg.complete && certImg.naturalWidth > 0) {
+        try {
+          const directCanvas = document.createElement('canvas');
+          directCanvas.width = 3508;
+          directCanvas.height = 2480;
+          const ctx = directCanvas.getContext('2d');
+          if (ctx) {
+            ctx.drawImage(certImg, 0, 0, 3508, 2480);
+            imgData = directCanvas.toDataURL('image/jpeg', 0.95);
           }
-        },
-      });
+        } catch (canvasErr) {
+          console.warn('Direct canvas render had cross-origin restrictions, falling back to html2canvas', canvasErr);
+        }
+      }
 
-      const imgData = canvas.toDataURL('image/jpeg', 0.98);
+      if (!imgData && certificateRef.current) {
+        const element = certificateRef.current;
+        const targetNode = element.querySelector<HTMLElement>('[data-certificate-node="true"]') || element;
+        const canvas = await html2canvas(targetNode, {
+          scale: 2,
+          useCORS: true,
+          logging: false,
+          backgroundColor: '#FFFFFF',
+        });
+        imgData = canvas.toDataURL('image/jpeg', 0.95);
+      }
 
-      // A4 Landscape is 297mm x 210mm
-      const pdf = new jsPDF({
-        orientation: 'landscape',
-        unit: 'mm',
-        format: 'a4',
-        compress: true,
-      });
+      if (imgData) {
+        const pdf = new jsPDF({
+          orientation: 'landscape',
+          unit: 'mm',
+          format: 'a4',
+          compress: true,
+        });
 
-      pdf.addImage(imgData, 'JPEG', 0, 0, 297, 210, undefined, 'FAST');
-      const certRef = isSample ? 'SPECIMEN-SAMPLE' : (certificate.certificateNumber || 'BCL-CREDENTIAL');
-      pdf.save(`British-Center-Certificate-${certRef}.pdf`);
+        pdf.addImage(imgData, 'JPEG', 0, 0, 297, 210, undefined, 'FAST');
+        const certRef = isSample ? 'SPECIMEN-SAMPLE' : (certificate.certificateNumber || 'BCL-CREDENTIAL');
+        pdf.save(`British-Center-Certificate-${certRef}.pdf`);
+      }
     } catch (err) {
       console.error('PDF export failed:', err);
     } finally {

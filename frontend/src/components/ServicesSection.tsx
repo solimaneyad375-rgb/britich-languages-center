@@ -218,23 +218,16 @@ export const ServicesSection: React.FC = () => {
               className="group relative rounded-sm p-3.5 bg-[#102B4C]/50 border border-[#C9A34A]/40 hover:border-[#C9A34A] shadow-xl transition-all duration-300 cursor-pointer overflow-hidden"
             >
               {/* Certificate Inner Preview Frame */}
-              <div className="relative bg-[#FAF8F2] p-4 text-[#07182D] rounded-xs border border-[#C9A34A]/30 space-y-2 select-none shadow-sm">
-                {/* Micro Header */}
-                <div className="flex flex-col items-center text-center">
-                  <img src={getAssetUrl('assets/logo-trimmed.webp')} alt="Crest" className="h-6 w-auto object-contain mb-1" />
-                  <span className="text-[9px] font-bold tracking-[0.2em] font-serif uppercase text-[#07182D]">BRITISH CENTER FOR LANGUAGES</span>
-                  <span className="text-[8px] font-semibold text-[#C9A34A]">المركز البريطاني لتعليم اللغات</span>
-                </div>
-                {/* Micro Title */}
-                <div className="text-center border-t border-b border-[#C9A34A]/30 py-1.5">
-                  <span className="text-[7.5px] font-mono tracking-widest text-[#C9A34A] block uppercase font-bold">OFFICIAL CREDENTIAL</span>
-                  <h4 className="text-xs font-serif font-bold text-[#07182D] uppercase">CERTIFICATE OF ACHIEVEMENT</h4>
-                </div>
-                {/* Micro Blank Recipient */}
-                <div className="text-center py-1">
-                  <span className="text-[7px] font-mono text-slate-400 block uppercase">[ RECIPIENT NAME / اسم المتدرب ]</span>
-                  <div className="w-32 h-[1px] bg-[#C9A34A]/50 mx-auto mt-0.5" />
-                </div>
+              <div className="relative bg-[#FAF8F2] rounded-xs border border-[#C9A34A]/30 overflow-hidden shadow-sm aspect-[1.414/1] flex items-center justify-center">
+                <img
+                  src={getAssetUrl('assets/editorial/official-custom-certificate.webp')}
+                  alt={lang === 'ar' ? 'نموذج وثيقة التخرج الرسمية' : 'Official Certificate Specimen'}
+                  className="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-[1.02]"
+                  loading="lazy"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = getAssetUrl('assets/editorial/certificate-sample.webp');
+                  }}
+                />
               </div>
               <div className="pt-2.5 flex items-center justify-between text-[11px] font-mono text-[#DFC075]">
                 <span>SAMPLE PREVIEW — نموذج توضيحي معتمد</span>
