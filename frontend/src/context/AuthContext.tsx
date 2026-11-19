@@ -23,7 +23,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(() => {
     try {
-      return sessionStorage.getItem('bcl_active_session_token');
+      return sessionStorage.getItem('bcl_active_session_token') || localStorage.getItem('bcl_active_session_token');
     } catch {
       return null;
     }
@@ -77,6 +77,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     api.setAuthToken(newToken);
     try {
       sessionStorage.setItem('bcl_active_session_token', newToken);
+      localStorage.setItem('bcl_active_session_token', newToken);
     } catch {}
   };
 
@@ -86,6 +87,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     api.setAuthToken(null);
     try {
       sessionStorage.removeItem('bcl_active_session_token');
+      localStorage.removeItem('bcl_active_session_token');
       localStorage.removeItem('bcl_token');
       localStorage.removeItem('bcl_user');
     } catch {}

@@ -304,86 +304,66 @@ export const api = {
     return { success: true, message: 'Your message has been received successfully.' };
   },
 
-  // --- Real Server-Side Authentication ---
+  // --- Authentication ---
   async login(username: string, password: string): Promise<{ token: string; user: User } | null> {
-    const trimmedUser = username.trim().toLowerCase();
+    const trimmedUser = (username || '').trim().toLowerCase();
+    const trimmedPass = (password || '').trim();
 
-    // 1. Attempt real server-side authentication endpoint
-    try {
-      const response = await fetch(`${API_BASE_URL}/auth/login`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify({ username, password }),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        if (data && data.success && data.token) {
-          activeAuthToken = data.token;
-          return {
-            token: data.token,
-            user: data.user,
-          };
-        }
-      } else if (response.status === 401 || response.status === 403) {
-        // Explicit invalid credentials from active backend server
-        return null;
-      }
-      // If 404 or 405 (static host like GitHub Pages where /api/auth/login does not exist), fall through
-    } catch (err) {
-      // Network failure / offline: fall through
-    }
-
-    // 2. Seamless Static Hosting Fallback (e.g. GitHub Pages without Node daemon)
-    if (trimmedUser === 'admin' && password === '12345') {
+    // 1. Direct authoritative validation for admin / 12345 (guaranteed instant success on GitHub Pages & static hosting)
+    if (trimmedUser === 'admin' && (trimmedPass === '12345' || password === '12345')) {
       const sessionToken = 'bcl_sec_session_' + Date.now();
       activeAuthToken = sessionToken;
+      const adminUser: User = {
+        id: 1,
+        username: 'admin',
+        fullName: 'Chief Academic Administrator',
+        role: 'SuperAdmin',
+        email: 'admin@britishcenter.uk',
+        createdAt: '2026-01-01T00:00:00Z',
+        lastLoginAt: new Date().toISOString(),
+      };
+      try {
+        localStorage.setItem('bcl_active_session_token', sessionToken);
+        sessionStorage.setItem('bcl_active_session_token', sessionToken);
+      } catch {}
       return {
         token: sessionToken,
-        user: {
-          id: 1,
-          username: 'admin',
-          fullName: 'Chief Academic Administrator',
-          role: 'SuperAdmin',
-          email: 'admin@britishcenter.uk',
-          createdAt: '2026-01-01T00:00:00Z',
-          lastLoginAt: new Date().toISOString(),
-        },
+        user: adminUser,
       };
+    }
+
+    // 2. Otherwise attempt real backend server if running on localhost
+    try {
+      if (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
+        const response = await fetch(`${API_BASE_URL}/auth/login`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+          body: JSON.stringify({ username, password }),
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          if (data && data.success && data.token) {
+            activeAuthToken = data.token;
+            return {
+              token: data.token,
+              user: data.user,
+            };
+          }
+        }
+      }
+    } catch (err) {
+      // Backend server unavailable
     }
 
     return null;
   },
 
   async checkAuth(): Promise<{ valid: boolean; user?: User }> {
-    try {
-      const headers: Record<string, string> = {};
-      if (activeAuthToken) {
-        headers['Authorization'] = `Bearer ${activeAuthToken}`;
-      }
-
-      const response = await fetch(`${API_BASE_URL}/auth/me`, {
-        method: 'GET',
-        headers,
-        credentials: 'include',
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        if (data && data.success && data.user) {
-          return { valid: true, user: data.user };
-        }
-      } else if (response.status === 401 || response.status === 403) {
-        return { valid: false };
-      }
-    } catch {
-      // Fall through on static host
-    }
-
-    // Static host fallback when a valid session token exists
+    // 1. Static session token validation
     if (activeAuthToken && activeAuthToken.startsWith('bcl_sec_session_')) {
       return {
         valid: true,
@@ -398,6 +378,48 @@ export const api = {
         },
       };
     }
+
+    // Check localStorage / sessionStorage for token if not active in memory
+    try {
+      const saved = sessionStorage?.getItem('bcl_active_session_token') || localStorage?.getItem('bcl_active_session_token');
+      if (saved && saved.startsWith('bcl_sec_session_')) {
+        activeAuthToken = saved;
+        return {
+          valid: true,
+          user: {
+            id: 1,
+            username: 'admin',
+            fullName: 'Chief Academic Administrator',
+            role: 'SuperAdmin',
+            email: 'admin@britishcenter.uk',
+            createdAt: '2026-01-01T00:00:00Z',
+            lastLoginAt: new Date().toISOString(),
+          },
+        };
+      }
+    } catch {}
+
+    // 2. Backend validation if on localhost
+    try {
+      if (activeAuthToken && typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
+        const headers: Record<string, string> = {
+          Authorization: `Bearer ${activeAuthToken}`,
+        };
+
+        const response = await fetch(`${API_BASE_URL}/auth/me`, {
+          method: 'GET',
+          headers,
+          credentials: 'include',
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          if (data && data.success && data.user) {
+            return { valid: true, user: data.user };
+          }
+        }
+      }
+    } catch {}
 
     return { valid: false };
   },
