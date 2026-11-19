@@ -65,6 +65,9 @@ app.use('/api/admin', apiLimiter, requireAdminAuth);
 app.get('/api/admin/stats', adminController.getStats);
 app.get('/api/admin/activities', adminController.getActivityLogs);
 
+app.get('/api/admin/shared-barcodes', adminController.getSharedBarcodes);
+app.post('/api/admin/shared-barcodes', adminController.addSharedBarcode);
+
 app.get('/api/admin/students', adminController.getStudents);
 app.post('/api/admin/students', adminController.addStudent);
 app.put('/api/admin/students/:id', adminController.updateStudent);

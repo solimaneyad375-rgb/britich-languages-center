@@ -156,12 +156,12 @@ export const HomepageCertificateShowcase: React.FC = () => {
               <QrCode className="w-4 h-4 text-[#DFC075]" />
             </div>
             <h4 className="text-xs sm:text-sm font-bold text-white font-serif">
-              {lang === 'ar' ? 'رمز استجابة مشفر (QR)' : 'Dynamic QR Verification'}
+              {lang === 'ar' ? 'الباركود الموحد المشفر' : 'Unified Shared Barcode (BC-QT-0047)'}
             </h4>
             <p className="text-[11px] text-slate-300 leading-normal">
               {lang === 'ar'
-                ? 'ربط رقمي مباشر بقاعدة البيانات المركزية للاستعلام الفوري عن السجل.'
-                : 'Direct digital link to the central verified database for instant query.'}
+                ? 'فحص رقمي موحد للدفعات والمجموعات حتى 30 متدرباً مع اعتماد السجلات مركزياً.'
+                : 'Direct digital verification for cohorts of up to 30 students with centrally accredited records.'}
             </p>
           </div>
 
@@ -197,7 +197,7 @@ export const HomepageCertificateShowcase: React.FC = () => {
             <ArrowIcon className="w-4 h-4 text-[#07182D]" />
           </button>
 
-          {/* Secondary CTA: Go to Verification Portal */}
+          {/* Secondary CTA: Go to Shared Barcode Verification Portal */}
           <button
             type="button"
             onClick={() => {
@@ -207,7 +207,7 @@ export const HomepageCertificateShowcase: React.FC = () => {
             className="px-6 py-3.5 rounded-xs bg-[#142B49] hover:bg-[#1A375E] text-[#F7F8FA] border border-[#C9A347]/40 text-sm font-semibold transition-colors duration-200 inline-flex items-center gap-2 cursor-pointer"
           >
             <ShieldCheck className="w-4 h-4 text-[#DFC075]" />
-            <span>{lang === 'ar' ? 'التحقق من كود شهادة' : 'Verify a Credential'}</span>
+            <span>{lang === 'ar' ? 'التحقق بالباركود الموحد (BC-QT-0047)' : 'Verify Shared Barcode (BC-QT-0047)'}</span>
           </button>
         </div>
       </div>

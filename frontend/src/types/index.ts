@@ -62,6 +62,38 @@ export interface Certificate {
   createdAt: string;
 }
 
+export interface SharedBarcodeStudent {
+  id: number;
+  studentIdNumber: string;
+  nameEn: string;
+  nameAr: string;
+  email?: string;
+  nationalIdMasked?: string;
+  gradeEn?: string;
+  gradeAr?: string;
+  status: 'Verified' | 'Pending' | 'Completed';
+}
+
+export interface SharedBarcodeGroup {
+  id: number;
+  barcode: string; // e.g. 'BC-QT-0047'
+  batchNumber: string;
+  titleEn: string;
+  titleAr: string;
+  maxCapacity: number; // Up to 30 students
+  enrolledCount: number;
+  issuingOrganizationEn: string;
+  issuingOrganizationAr: string;
+  accreditingEntityEn: string;
+  accreditingEntityAr: string;
+  issueDate: string;
+  expiryDate?: string;
+  status: 'Valid' | 'Revoked' | 'Expired' | 'Pending';
+  students: SharedBarcodeStudent[];
+  notes?: string;
+  createdAt: string;
+}
+
 export interface PublicVerificationResponse {
   isFound: boolean;
   isValid: boolean;
@@ -69,6 +101,8 @@ export interface PublicVerificationResponse {
   statusBadgeColor: string;
   messageEn: string;
   messageAr: string;
+  isSharedBarcode?: boolean;
+  sharedBarcodeData?: SharedBarcodeGroup;
   studentNameEn?: string;
   studentNameAr?: string;
   studentIdNumber?: string;

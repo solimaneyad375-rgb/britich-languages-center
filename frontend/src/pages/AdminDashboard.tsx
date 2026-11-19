@@ -18,7 +18,10 @@ import {
   StudentIdCard,
   WebsiteSettings,
   ActivityLog,
+  SharedBarcodeGroup,
+  SharedBarcodeStudent,
 } from '../types';
+import { SharedBarcodeCard } from '../components/SharedBarcodeCard';
 import {
   LayoutDashboard,
   Users,
@@ -78,6 +81,9 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate: propNa
   const [partners, setPartners] = useState<Partner[]>([]);
   const [activities, setActivities] = useState<ActivityLog[]>([]);
   const [settings, setSettings] = useState<WebsiteSettings>(() => storage.getWebsiteSettings());
+  const [sharedCohorts, setSharedCohorts] = useState<SharedBarcodeGroup[]>([]);
+  const [selectedCohort, setSelectedCohort] = useState<SharedBarcodeGroup | null>(null);
+  const [cohortStudentSearch, setCohortStudentSearch] = useState('');
   const [loading, setLoading] = useState(true);
   const [settingsSuccess, setSettingsSuccess] = useState(false);
 
@@ -175,7 +181,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate: propNa
   const loadAllData = async () => {
     setLoading(true);
     try {
-      const [statsData, studentsData, certsData, cardsData, partnersData, acts, curSettings] = await Promise.all([
+      const [statsData, studentsData, certsData, cardsData, partnersData, acts, curSettings, sharedData] = await Promise.all([
         api.getDashboardStats(),
         api.getStudents(),
         api.getCertificates(),
@@ -183,6 +189,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate: propNa
         api.getPartners(),
         api.getActivityLogs(),
         api.getWebsiteSettings(),
+        api.getSharedBarcodes(),
       ]);
       setStats(statsData);
       setStudents(Array.isArray(studentsData) ? studentsData : (studentsData as any).items || []);
@@ -191,6 +198,10 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate: propNa
       setPartners(partnersData);
       setActivities(acts);
       setSettings(curSettings);
+      setSharedCohorts(sharedData || []);
+      if (sharedData && sharedData.length > 0) {
+        setSelectedCohort(sharedData[0]);
+      }
     } catch (err) {
       console.error('Failed to load dashboard data', err);
     } finally {
@@ -860,53 +871,198 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate: propNa
           </div>
         )}
 
-        {/* TAB 3: CERTIFICATES MANAGEMENT */}
+        {/* TAB 3: SHARED BARCODE & CERTIFICATES MANAGEMENT */}
         {activeTab === 'certificates' && (
-          <div className="space-y-6 animate-in fade-in duration-200">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="space-y-8 animate-in fade-in duration-200">
+            {/* 1. Header */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[rgba(197,160,75,0.2)] pb-5">
               <div>
-                <h1 className="text-2xl font-bold text-white font-serif">
-                  {t('adminNavCertificates')}
+                <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-[#C5A04B]/15 border border-[#C5A04B]/30 text-[#DFC075] text-[11px] font-mono font-bold mb-1.5 uppercase">
+                  <ShieldCheck className="w-3.5 h-3.5 text-[#DFC075]" />
+                  <span>{lang === 'ar' ? 'نظام التحقق الرسمي المعتمد' : 'Official Verification System'}</span>
+                </div>
+                <h1 className="text-2xl sm:text-3xl font-bold text-white font-serif tracking-tight">
+                  {lang === 'ar' ? 'إدارة الباركود الموحد والشهادات الأكاديمية' : 'Shared Barcode & Certificates Management'}
                 </h1>
-                <p className="text-xs text-[#B8C5D6]">
-                  {lang === 'ar' ? 'إصدار، إدارة، وتوثيق الشهادات الأكاديمية والمهنية وتوليد رموز QR' : 'Issue, manage, and verify educational qualifications and generate QR codes'}
+                <p className="text-xs text-[#B8C5D6] max-w-2xl mt-1">
+                  {lang === 'ar'
+                    ? 'المنظومة المركزية لإدارة دفعات الطلاب المعتمدة برمز الباركود الموحد (BC-QT-0047 حتى 30 متدرباً) والأرشيف التاريخي للشهادات'
+                    : 'Central system managing accredited student cohorts under unified shared barcode (BC-QT-0047 up to 30 students) and historical certificates registry'}
                 </p>
               </div>
 
-              <button
-                onClick={() => setIsIssueCertOpen(true)}
-                className="px-4 py-2.5 rounded-xs bg-[#C5A04B] hover:bg-[#DFC075] text-[#08182E] text-xs font-bold flex items-center gap-2 shadow-md shrink-0 cursor-pointer"
-              >
-                <Plus className="w-4 h-4 text-[#08182E]" />
-                <span>{t('adminIssueCert')}</span>
-              </button>
+              <div className="flex items-center gap-2.5 shrink-0">
+                <button
+                  onClick={() => navigate('/verify?code=BC-QT-0047')}
+                  className="px-4 py-2.5 rounded-xs bg-[#08182E] text-[#DFC075] border border-[rgba(197,160,75,0.4)] hover:bg-[#1A375E] text-xs font-bold flex items-center gap-2 shadow-md cursor-pointer transition-colors"
+                >
+                  <ExternalLink className="w-3.5 h-3.5 text-[#DFC075]" />
+                  <span>{lang === 'ar' ? 'معاينة صفحة التحقق العامة' : 'Open Public Verification'}</span>
+                </button>
+                <button
+                  onClick={() => setIsIssueCertOpen(true)}
+                  className="px-4 py-2.5 rounded-xs bg-[#C5A04B] hover:bg-[#DFC075] text-[#08182E] text-xs font-bold flex items-center gap-2 shadow-md shrink-0 cursor-pointer transition-colors"
+                >
+                  <Plus className="w-4 h-4 text-[#08182E]" />
+                  <span>{t('adminIssueCert')}</span>
+                </button>
+              </div>
             </div>
 
-            {/* Filter & Search Bar */}
-            <div className="flex flex-col sm:flex-row gap-3">
-              <div className="relative flex-1">
-                <Search className="w-4 h-4 absolute inset-y-0 start-3 my-auto text-slate-400" />
-                <input
-                  type="text"
-                  value={certSearch}
-                  onChange={(e) => setCertSearch(e.target.value)}
-                  placeholder={t('adminSearchPlaceholder')}
-                  className="w-full ps-9 pe-4 py-2 bg-[#08182E] border border-[rgba(197,160,75,0.3)] rounded-xs text-xs font-semibold text-white placeholder:text-slate-500 focus:outline-none focus:border-[#C5A04B]"
-                />
+            {/* 2. SECTION: SHARED BARCODE COHORTS (PRIMARY SECTION) */}
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div className="w-2.5 h-2.5 rounded-full bg-[#C5A04B] animate-pulse" />
+                  <h2 className="text-lg font-bold text-white font-serif">
+                    {lang === 'ar' ? 'دفعة الباركود الموحد المعتمدة: BC-QT-0047' : 'Accredited Shared Barcode Cohort: BC-QT-0047'}
+                  </h2>
+                  <span className="text-xs font-mono px-2 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 font-bold">
+                    30 / 30 {lang === 'ar' ? 'طالباً معتمداً' : 'Students Enrolled'}
+                  </span>
+                </div>
               </div>
 
-              <select
-                value={certStatusFilter}
-                onChange={(e) => setCertStatusFilter(e.target.value)}
-                className="px-3 py-2 bg-[#08182E] border border-[rgba(197,160,75,0.3)] text-white text-xs font-semibold rounded-xs focus:outline-none focus:border-[#C5A04B]"
-              >
-                <option value="">All Statuses</option>
-                <option value="Valid">Valid</option>
-                <option value="Pending">Pending</option>
-                <option value="Revoked">Revoked</option>
-                <option value="Expired">Expired</option>
-              </select>
+              {/* Shared Barcode Component Showcase */}
+              {selectedCohort ? (
+                <div className="space-y-4">
+                  <SharedBarcodeCard cohort={selectedCohort} lang={lang} />
+
+                  {/* Student Cohort Roster Table (30 Students) */}
+                  <div className="bg-[#152B49] rounded-xs shadow-xl border border-[rgba(197,160,75,0.22)] overflow-hidden">
+                    <div className="p-4 bg-[#0B1E38] border-b border-[rgba(197,160,75,0.2)] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                      <div>
+                        <h3 className="text-sm font-bold text-white font-serif">
+                          {lang === 'ar' ? 'كشف الطلاب المعتمدين بالدفعة (30 طالباً)' : 'Accredited Student Cohort Roster (30 Students)'}
+                        </h3>
+                        <p className="text-[11px] text-slate-400 font-mono">
+                          {lang === 'ar' ? 'سجلات الطلاب الموثقة بالباركود الموحد BC-QT-0047' : 'Verified records under shared barcode BC-QT-0047'}
+                        </p>
+                      </div>
+
+                      {/* Filter inside cohort */}
+                      <div className="relative w-full sm:w-72">
+                        <Search className="w-3.5 h-3.5 absolute inset-y-0 start-3 my-auto text-slate-400" />
+                        <input
+                          type="text"
+                          value={cohortStudentSearch}
+                          onChange={(e) => setCohortStudentSearch(e.target.value)}
+                          placeholder={lang === 'ar' ? 'بحث بالاسم، كود الطالب، أو التخصص...' : 'Filter student in cohort...'}
+                          className="w-full ps-8 pe-3 py-1.5 bg-[#08182E] border border-[rgba(197,160,75,0.3)] rounded-xs text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-[#C5A04B]"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="overflow-x-auto max-h-96 overflow-y-auto">
+                      <table className="w-full text-xs text-start">
+                        <thead className="bg-[#08182E] sticky top-0 border-b border-[rgba(197,160,75,0.2)] text-[#DFC075] uppercase text-[10px] font-mono z-10">
+                          <tr>
+                            <th className="py-2.5 px-3 text-center">#</th>
+                            <th className="py-2.5 px-4">{lang === 'ar' ? 'كود الطالب' : 'Student ID'}</th>
+                            <th className="py-2.5 px-4">{lang === 'ar' ? 'اسم الطالب (عربي / إنجليزي)' : 'Student Name (AR/EN)'}</th>
+                            <th className="py-2.5 px-4">{lang === 'ar' ? 'البرنامج التدريبي' : 'Program / Specialization'}</th>
+                            <th className="py-2.5 px-4">{lang === 'ar' ? 'التقدير' : 'Grade'}</th>
+                            <th className="py-2.5 px-4 text-center">{lang === 'ar' ? 'الحالة' : 'Status'}</th>
+                            <th className="py-2.5 px-4 text-center">{lang === 'ar' ? 'إجراء' : 'Action'}</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-white/5 font-sans">
+                          {selectedCohort.students
+                            .filter((st, idx) => {
+                              if (!cohortStudentSearch.trim()) return true;
+                              const q = cohortStudentSearch.toLowerCase();
+                              return (
+                                st.nameEn.toLowerCase().includes(q) ||
+                                st.nameAr.includes(q) ||
+                                st.studentIdNumber.toLowerCase().includes(q) ||
+                                String(st.id || idx + 1).includes(q)
+                              );
+                            })
+                            .map((st, idx) => (
+                              <tr key={st.id || idx} className="hover:bg-[#1A375E]/60 transition-colors">
+                                <td className="py-2 px-3 text-center font-mono font-bold text-slate-400">
+                                  {idx + 1}
+                                </td>
+                                <td className="py-2 px-4 font-mono font-bold text-[#DFC075]">
+                                  {st.studentIdNumber}
+                                </td>
+                                <td className="py-2 px-4">
+                                  <div className="font-bold text-white">{lang === 'ar' ? st.nameAr : st.nameEn}</div>
+                                  <div className="text-[11px] text-slate-400 font-normal">
+                                    {lang === 'ar' ? st.nameEn : st.nameAr}
+                                  </div>
+                                </td>
+                                <td className="py-2 px-4 text-[#B8C5D6] max-w-xs truncate">
+                                  {lang === 'ar' ? selectedCohort.titleAr : selectedCohort.titleEn}
+                                </td>
+                                <td className="py-2 px-4 font-semibold text-slate-300">
+                                  {lang === 'ar' ? (st.gradeAr || 'امتياز') : (st.gradeEn || 'Distinction')}
+                                </td>
+                                <td className="py-2 px-4 text-center">
+                                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/15 border border-emerald-500/30 text-emerald-400">
+                                    {lang === 'ar' ? 'معتمد رسمي' : 'Verified'}
+                                  </span>
+                                </td>
+                                <td className="py-2 px-4 text-center">
+                                  <button
+                                    onClick={() => navigate(`/verify?code=${st.studentIdNumber}`)}
+                                    className="px-2 py-1 rounded-xs bg-[#08182E] text-[#DFC075] border border-[rgba(197,160,75,0.3)] hover:bg-[#C5A04B] hover:text-[#08182E] font-bold text-[10px] transition-colors cursor-pointer"
+                                    title="Verify Student via Portal"
+                                  >
+                                    {lang === 'ar' ? 'فحص السجل' : 'Verify'}
+                                  </button>
+                                </td>
+                              </tr>
+                            ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              ) : null}
             </div>
+
+            {/* 3. SECTION: HISTORICAL CERTIFICATES ARCHIVE (PRESERVED) */}
+            <div className="pt-6 border-t border-[rgba(197,160,75,0.2)] space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                  <h2 className="text-base sm:text-lg font-bold text-white font-serif flex items-center gap-2">
+                    <Award className="w-4 h-4 text-[#C5A04B]" />
+                    <span>{lang === 'ar' ? 'الأرشيف المركزي وسجل الشهادات الفردية' : 'Historical Individual Certificates Archive'}</span>
+                  </h2>
+                  <p className="text-[11px] text-slate-400">
+                    {lang === 'ar'
+                      ? 'قاعدة السجلات التاريخية للشهادات الفردية الصادرة والتحكم بحالات السريان والإلغاء'
+                      : 'Historical database of individually issued credentials with status & revocation control'}
+                  </p>
+                </div>
+              </div>
+
+              {/* Filter & Search Bar */}
+              <div className="flex flex-col sm:flex-row gap-3">
+                <div className="relative flex-1">
+                  <Search className="w-4 h-4 absolute inset-y-0 start-3 my-auto text-slate-400" />
+                  <input
+                    type="text"
+                    value={certSearch}
+                    onChange={(e) => setCertSearch(e.target.value)}
+                    placeholder={t('adminSearchPlaceholder')}
+                    className="w-full ps-9 pe-4 py-2 bg-[#08182E] border border-[rgba(197,160,75,0.3)] rounded-xs text-xs font-semibold text-white placeholder:text-slate-500 focus:outline-none focus:border-[#C5A04B]"
+                  />
+                </div>
+
+                <select
+                  value={certStatusFilter}
+                  onChange={(e) => setCertStatusFilter(e.target.value)}
+                  className="px-3 py-2 bg-[#08182E] border border-[rgba(197,160,75,0.3)] text-white text-xs font-semibold rounded-xs focus:outline-none focus:border-[#C5A04B]"
+                >
+                  <option value="">All Statuses</option>
+                  <option value="Valid">Valid</option>
+                  <option value="Pending">Pending</option>
+                  <option value="Revoked">Revoked</option>
+                  <option value="Expired">Expired</option>
+                </select>
+              </div>
 
             {/* Certificates Table */}
             <div className="bg-[#152B49] rounded-xs shadow-xl border border-[rgba(197,160,75,0.22)] overflow-hidden">
@@ -1016,6 +1172,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate: propNa
               </div>
             </div>
           </div>
+        </div>
         )}
 
         {/* TAB 4: ID CARDS */}

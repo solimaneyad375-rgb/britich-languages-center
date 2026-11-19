@@ -15,6 +15,7 @@ import {
   StudentIdCard,
   User,
   WebsiteSettings,
+  SharedBarcodeGroup,
 } from '../types';
 import { storage } from './storage';
 
@@ -118,6 +119,15 @@ export const api = {
 
   async verifyCertificate(query: string): Promise<PublicVerificationResponse> {
     return this.verify(query);
+  },
+
+  // --- Shared Barcode Cohorts ---
+  async getSharedBarcodes(): Promise<SharedBarcodeGroup[]> {
+    return storage.getSharedBarcodes();
+  },
+
+  async addSharedBarcode(group: SharedBarcodeGroup): Promise<SharedBarcodeGroup> {
+    return storage.addSharedBarcode(group);
   },
 
   // --- Students CRUD ---

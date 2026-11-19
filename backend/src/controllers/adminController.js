@@ -42,6 +42,16 @@ export const adminController = {
     return res.json({ success: true, message: 'Student record deleted.' });
   },
 
+  // --- Shared Barcodes ---
+  getSharedBarcodes(req, res) {
+    return res.json({ success: true, data: store.getSharedBarcodes() });
+  },
+
+  addSharedBarcode(req, res) {
+    const group = store.addSharedBarcode(req.body);
+    return res.status(201).json({ success: true, data: group });
+  },
+
   // --- Certificates ---
   getCertificates(req, res) {
     return res.json({ success: true, data: store.getCertificates() });

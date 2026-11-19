@@ -49,7 +49,7 @@ export const HomePage: React.FC<HomePageProps> = ({ navigate: propNavigate }) =>
       {/* 7. Cooperating Partners & Academies */}
       <PartnersSection />
 
-      {/* 8. Clean Institutional Pre-Footer Verification Banner */}
+      {/* 8. Official Shared Barcode Verification Pre-Footer Banner */}
       <section className="py-14 sm:py-18 bg-[#F7F8FA] dark:bg-[#07182D] border-t border-gray-200 dark:border-[rgba(201,163,74,0.22)]">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-6">
           <div className="w-12 h-12 mx-auto rounded-full bg-white dark:bg-[#152B49] border border-gray-300 dark:border-[rgba(197,160,75,0.3)] text-[#DFC075] flex items-center justify-center shadow-xs">
@@ -58,19 +58,19 @@ export const HomePage: React.FC<HomePageProps> = ({ navigate: propNavigate }) =>
 
           <div className="space-y-2">
             <span className="text-xs font-mono font-bold text-[#C5A04B] uppercase tracking-wider block">
-              ACADEMIC VERIFICATION LEDGER
+              OFFICIAL SHARED BARCODE VERIFICATION
             </span>
             <h2 className="text-2xl sm:text-3xl font-bold text-[#102F5C] dark:text-white tracking-tight font-serif">
               {lang === 'ar'
-                ? 'التحقق الرقمي المباشر من صحة وسريان الشهادات'
-                : 'Direct Digital Verification of Academic Credentials'}
+                ? 'منظومة التحقق الموحد بالباركود للدفعات والشهادات'
+                : 'Official Shared Barcode Verification System'}
             </h2>
           </div>
 
           <p className="text-sm sm:text-base text-slate-600 dark:text-[#B8C5D6] max-w-xl mx-auto leading-relaxed font-normal">
             {lang === 'ar'
-              ? 'تتيح بوابتنا الرسمية لأصحاب الأعمال والمؤسسات الاستعلام الفوري عن السجلات المعتمدة برقم الشهادة أو الرقم التعريفي للطالب.'
-              : 'Our official verification portal allows employers and academic bodies to instantly validate credential records using the certificate reference or student ID.'}
+              ? 'تتيح منظومة التحقق بالباركود الموحد فحص واعتماد دفعات المتدربين (حتى 30 متدرباً لكل رمز موحد مثل BC-QT-0047) والتحقق الفوري من صحة السجلات والبيانات الأكاديمية.'
+              : 'Our official shared barcode verification system enables employers and academic bodies to authenticate verified cohorts (up to 30 students per barcode like BC-QT-0047) in real time.'}
           </p>
 
           <div className="pt-2">
@@ -82,7 +82,7 @@ export const HomePage: React.FC<HomePageProps> = ({ navigate: propNavigate }) =>
               className="px-7 py-3 rounded-xs bg-[#C5A04B] hover:bg-[#DFC075] text-[#08182E] text-sm font-bold transition-colors duration-200 inline-flex items-center gap-2 cursor-pointer shadow-md"
             >
               <ShieldCheck className="w-4 h-4 text-[#08182E]" />
-              <span>{lang === 'ar' ? 'الانتقال إلى بوابة التحقق' : 'Go to Verification Portal'}</span>
+              <span>{lang === 'ar' ? 'التحقق من كود الباركود الموحد (BC-QT-0047)' : 'Verify Shared Barcode (BC-QT-0047)'}</span>
               <ArrowIcon className="w-4 h-4 text-[#08182E]" />
             </button>
           </div>

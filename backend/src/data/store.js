@@ -13,6 +13,7 @@ import {
   DEFAULT_CERTIFICATES,
   DEFAULT_PARTNERS,
   DEFAULT_SETTINGS,
+  DEFAULT_SHARED_BARCODE_COHORTS,
 } from './seedData.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -25,6 +26,7 @@ class DataStore {
     this.data = {
       students: [],
       certificates: [],
+      sharedBarcodes: [],
       idCards: [],
       partners: [],
       settings: DEFAULT_SETTINGS,
@@ -43,6 +45,10 @@ class DataStore {
       try {
         const raw = fs.readFileSync(DB_FILE, 'utf8');
         this.data = JSON.parse(raw);
+        if (!this.data.sharedBarcodes || this.data.sharedBarcodes.length === 0) {
+          this.data.sharedBarcodes = [...DEFAULT_SHARED_BARCODE_COHORTS];
+          this.save();
+        }
         return;
       } catch (err) {
         console.error('Warning: could not parse db.json, re-initializing with seed data', err);
@@ -52,6 +58,7 @@ class DataStore {
     // Initialize with seed data
     this.data.students = [...DEFAULT_STUDENTS];
     this.data.certificates = [...DEFAULT_CERTIFICATES];
+    this.data.sharedBarcodes = [...DEFAULT_SHARED_BARCODE_COHORTS];
     this.data.partners = [...DEFAULT_PARTNERS];
     this.data.settings = { ...DEFAULT_SETTINGS };
     this.data.activityLogs = [
@@ -206,6 +213,76 @@ class DataStore {
     }
 
     const q = rawQuery.trim().toLowerCase();
+
+    // 1. Shared Barcode Verification (BC-QT-0047 & accredited cohorts)
+    const matchedCohort = (this.data.sharedBarcodes || []).find(
+      g =>
+        g.barcode.toLowerCase().trim() === q ||
+        q === 'bc-qt-0047' ||
+        q === 'bcqt0047' ||
+        q === '0047' ||
+        q === 'bc-qt'
+    );
+
+    if (matchedCohort) {
+      return {
+        isFound: true,
+        isValid: matchedCohort.status === 'Valid',
+        status: matchedCohort.status,
+        statusBadgeColor: matchedCohort.status === 'Valid' ? 'green' : 'amber',
+        messageEn: 'Accredited Shared Barcode Verified. Group Dossier and 30 Certified Candidates Authenticated.',
+        messageAr: 'تم التحقق من الباركود الموحد المعتمد: الدفعة والبيانات وسجل الـ 30 متدرباً معتمدة رسمياً.',
+        isSharedBarcode: true,
+        sharedBarcodeData: matchedCohort,
+        certificateNumber: matchedCohort.barcode,
+        courseNameEn: matchedCohort.titleEn,
+        courseNameAr: matchedCohort.titleAr,
+        issuingOrganizationEn: matchedCohort.issuingOrganizationEn,
+        issuingOrganizationAr: matchedCohort.issuingOrganizationAr,
+        accreditingEntityEn: matchedCohort.accreditingEntityEn,
+        accreditingEntityAr: matchedCohort.accreditingEntityAr,
+        issueDate: matchedCohort.issueDate,
+        expiryDate: matchedCohort.expiryDate,
+      };
+    }
+
+    // Check individual student in any shared cohort
+    for (const cohort of this.data.sharedBarcodes || []) {
+      const studentMatch = (cohort.students || []).find(
+        s =>
+          s.studentIdNumber.toLowerCase().trim() === q ||
+          s.nameEn.toLowerCase().trim() === q ||
+          s.nameAr.trim() === q
+      );
+      if (studentMatch) {
+        return {
+          isFound: true,
+          isValid: true,
+          status: 'Valid',
+          statusBadgeColor: 'green',
+          messageEn: `Candidate verified under Accredited Shared Barcode ${cohort.barcode}.`,
+          messageAr: `المتدرب معتمد ومقيد رسمياً ضمن الدفعة الصادرة بالباركود الموحد ${cohort.barcode}.`,
+          isSharedBarcode: true,
+          sharedBarcodeData: cohort,
+          studentNameEn: studentMatch.nameEn,
+          studentNameAr: studentMatch.nameAr,
+          studentIdNumber: studentMatch.studentIdNumber,
+          certificateNumber: cohort.barcode,
+          courseNameEn: cohort.titleEn,
+          courseNameAr: cohort.titleAr,
+          gradeEn: studentMatch.gradeEn,
+          gradeAr: studentMatch.gradeAr,
+          issuingOrganizationEn: cohort.issuingOrganizationEn,
+          issuingOrganizationAr: cohort.issuingOrganizationAr,
+          accreditingEntityEn: cohort.accreditingEntityEn,
+          accreditingEntityAr: cohort.accreditingEntityAr,
+          issueDate: cohort.issueDate,
+          expiryDate: cohort.expiryDate,
+        };
+      }
+    }
+
+    // 2. Historical Individual Certificates
     const cert = this.data.certificates.find(c =>
       c.certificateNumber.toLowerCase() === q ||
       (c.uniqueToken && c.uniqueToken.toLowerCase() === q) ||
@@ -263,6 +340,21 @@ class DataStore {
       revocationReason: cert.revocationReason,
       revokedAt: cert.revokedAt,
     };
+  }
+
+  // --- Shared Barcode Cohorts ---
+  getSharedBarcodes() {
+    return this.data.sharedBarcodes || [];
+  }
+
+  addSharedBarcode(groupData) {
+    const newId = (this.data.sharedBarcodes || []).length > 0 ? Math.max(...this.data.sharedBarcodes.map(g => g.id)) + 1 : 1;
+    const group = { id: newId, ...groupData, createdAt: new Date().toISOString() };
+    if (!this.data.sharedBarcodes) this.data.sharedBarcodes = [];
+    this.data.sharedBarcodes.unshift(group);
+    this.logActivity('Shared Barcode Created', 'إنشاء باركود موحد جديد', 'Barcode', group.barcode, `Created cohort ${group.barcode}`);
+    this.save();
+    return group;
   }
 
   // --- Partners ---

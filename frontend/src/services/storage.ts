@@ -15,18 +15,75 @@ import {
   WebsiteSettings,
   ActivityLog,
   StudentIdCard,
+  SharedBarcodeGroup,
+  SharedBarcodeStudent,
 } from '../types';
 import { getVerifyUrl } from '../utils/assets';
 
 const STORAGE_KEYS = {
   STUDENTS: 'bcl_students_data',
   CERTIFICATES: 'bcl_certificates_data',
+  SHARED_BARCODES: 'bcl_shared_barcodes_data',
   PARTNERS: 'bcl_partners_data',
   SETTINGS: 'bcl_website_settings_data',
   ACTIVITY_LOGS: 'bcl_activity_logs_data',
   MESSAGES: 'bcl_contact_messages_data',
   VERIFICATION_COUNT: 'bcl_verification_count_data',
 };
+
+// Seed Cohort: BC-QT-0047 (Authorized for up to 30 students)
+export const DEFAULT_SHARED_BARCODE_COHORTS: SharedBarcodeGroup[] = [
+  {
+    id: 1,
+    barcode: 'BC-QT-0047',
+    batchNumber: 'BC-COHORT-2026-47',
+    titleEn: 'Advanced Institutional Leadership & Professional English Masterclass',
+    titleAr: 'الدبلوم المهني المتقدم في القيادة المؤسسية واللغة الإنجليزية للأعمال',
+    maxCapacity: 30,
+    enrolledCount: 30,
+    issuingOrganizationEn: 'British Center for Languages',
+    issuingOrganizationAr: 'المركز البريطاني لتعليم اللغات',
+    accreditingEntityEn: 'UK International Education & Training',
+    accreditingEntityAr: 'التعليم والتدريب الدولي بالمملكة المتحدة',
+    issueDate: '2026-06-20',
+    expiryDate: '2028-06-20',
+    status: 'Valid',
+    notes: 'Official Accredited Cohort — Authorized for up to 30 certified candidates / دفعة تدريبية معتمدة رسمياً بسعة تصل إلى 30 متدرباً',
+    createdAt: '2026-06-20T10:00:00Z',
+    students: [
+      { id: 1, studentIdNumber: 'BCL-STU-4701', nameEn: 'Alexander James Sterling', nameAr: 'ألكسندر جيمس ستيرلنج', gradeEn: 'Distinction', gradeAr: 'امتياز مع مرتبة الشرف', status: 'Verified' },
+      { id: 2, studentIdNumber: 'BCL-STU-4702', nameEn: 'Fatima Al-Zahra Mansour', nameAr: 'فاطمة الزهراء منصور', gradeEn: 'Distinction', gradeAr: 'امتياز مع مرتبة الشرف', status: 'Verified' },
+      { id: 3, studentIdNumber: 'BCL-STU-4703', nameEn: 'Omar Khaled Al-Nuaimi', nameAr: 'عمر خالد النعيمي', gradeEn: 'Excellent', gradeAr: 'ممتاز', status: 'Verified' },
+      { id: 4, studentIdNumber: 'BCL-STU-4704', nameEn: 'Sarah Elizabeth Jenkins', nameAr: 'سارة إليزابيث جنكينز', gradeEn: 'Excellent', gradeAr: 'ممتاز', status: 'Verified' },
+      { id: 5, studentIdNumber: 'BCL-STU-4705', nameEn: 'Mohamed Ahmed El-Shennawy', nameAr: 'محمد أحمد الشناوي', gradeEn: 'Distinction', gradeAr: 'امتياز مع مرتبة الشرف', status: 'Verified' },
+      { id: 6, studentIdNumber: 'BCL-STU-4706', nameEn: 'Nouran Hesham El-Banna', nameAr: 'نوران هشام البنا', gradeEn: 'Excellent', gradeAr: 'ممتاز', status: 'Verified' },
+      { id: 7, studentIdNumber: 'BCL-STU-4707', nameEn: 'Youssef Karim Al-Husseini', nameAr: 'يوسف كريم الحسيني', gradeEn: 'Distinction', gradeAr: 'امتياز', status: 'Verified' },
+      { id: 8, studentIdNumber: 'BCL-STU-4708', nameEn: 'Mariam Adel Soliman', nameAr: 'مريم عادل سليمان', gradeEn: 'Excellent', gradeAr: 'ممتاز', status: 'Verified' },
+      { id: 9, studentIdNumber: 'BCL-STU-4709', nameEn: 'Kareem Mostafa Barakat', nameAr: 'كريم مصطفى بركات', gradeEn: 'Very Good', gradeAr: 'جيد جداً', status: 'Verified' },
+      { id: 10, studentIdNumber: 'BCL-STU-4710', nameEn: 'Hoda Tarek Radwan', nameAr: 'هدى طارق رضوان', gradeEn: 'Distinction', gradeAr: 'امتياز', status: 'Verified' },
+      { id: 11, studentIdNumber: 'BCL-STU-4711', nameEn: 'Ziad Mahmoud Abdel-Aziz', nameAr: 'زياد محمود عبدالعزيز', gradeEn: 'Excellent', gradeAr: 'ممتاز', status: 'Verified' },
+      { id: 12, studentIdNumber: 'BCL-STU-4712', nameEn: 'Salma Ibrahim Fawzy', nameAr: 'سلمى إبراهيم فوزي', gradeEn: 'Distinction', gradeAr: 'امتياز مع مرتبة الشرف', status: 'Verified' },
+      { id: 13, studentIdNumber: 'BCL-STU-4713', nameEn: 'Amr Khaled El-Gohary', nameAr: 'عمرو خالد الجوهري', gradeEn: 'Very Good', gradeAr: 'جيد جداً', status: 'Verified' },
+      { id: 14, studentIdNumber: 'BCL-STU-4714', nameEn: 'Dina Samir Mansour', nameAr: 'دينا سمير منصور', gradeEn: 'Excellent', gradeAr: 'ممتاز', status: 'Verified' },
+      { id: 15, studentIdNumber: 'BCL-STU-4715', nameEn: 'Hamza Nabil Al-Sayed', nameAr: 'حمزة نبيل السيد', gradeEn: 'Distinction', gradeAr: 'امتياز', status: 'Verified' },
+      { id: 16, studentIdNumber: 'BCL-STU-4716', nameEn: 'Reem Ashraf Tawfiq', nameAr: 'ريم أشرف توفيق', gradeEn: 'Excellent', gradeAr: 'ممتاز', status: 'Verified' },
+      { id: 17, studentIdNumber: 'BCL-STU-4717', nameEn: 'Mahmoud Saeed Othman', nameAr: 'محمود سعيد عثمان', gradeEn: 'Very Good', gradeAr: 'جيد جداً', status: 'Verified' },
+      { id: 18, studentIdNumber: 'BCL-STU-4718', nameEn: 'Yasmin Sherif El-Kady', nameAr: 'ياسمين شريف القاضي', gradeEn: 'Distinction', gradeAr: 'امتياز', status: 'Verified' },
+      { id: 19, studentIdNumber: 'BCL-STU-4719', nameEn: 'Ramy Ahmed Mokhtar', nameAr: 'رامي أحمد مختار', gradeEn: 'Excellent', gradeAr: 'ممتاز', status: 'Verified' },
+      { id: 20, studentIdNumber: 'BCL-STU-4720', nameEn: 'Laila Bassem Zahran', nameAr: 'ليلى باسم زهران', gradeEn: 'Distinction', gradeAr: 'امتياز مع مرتبة الشرف', status: 'Verified' },
+      { id: 21, studentIdNumber: 'BCL-STU-4721', nameEn: 'Tamer Adel Al-Sharif', nameAr: 'تامر عادل الشريف', gradeEn: 'Very Good', gradeAr: 'جيد جداً', status: 'Verified' },
+      { id: 22, studentIdNumber: 'BCL-STU-4722', nameEn: 'Menna Essam Ghoneim', nameAr: 'منة عصام غنيم', gradeEn: 'Excellent', gradeAr: 'ممتاز', status: 'Verified' },
+      { id: 23, studentIdNumber: 'BCL-STU-4723', nameEn: 'Sherif Wael El-Attar', nameAr: 'شريف وائل العطار', gradeEn: 'Distinction', gradeAr: 'امتياز', status: 'Verified' },
+      { id: 24, studentIdNumber: 'BCL-STU-4724', nameEn: 'Aya Mamdouh Fayed', nameAr: 'آية ممدوح فايد', gradeEn: 'Excellent', gradeAr: 'ممتاز', status: 'Verified' },
+      { id: 25, studentIdNumber: 'BCL-STU-4725', nameEn: 'Hossam Magdy Bayoumi', nameAr: 'حسام مجدي بيومي', gradeEn: 'Very Good', gradeAr: 'جيد جداً', status: 'Verified' },
+      { id: 26, studentIdNumber: 'BCL-STU-4726', nameEn: 'Farah Tarek Al-Minshawi', nameAr: 'فرح طارق المنشاوي', gradeEn: 'Distinction', gradeAr: 'امتياز مع مرتبة الشرف', status: 'Verified' },
+      { id: 27, studentIdNumber: 'BCL-STU-4727', nameEn: 'Marwan Hassan Allam', nameAr: 'مروان حسن علام', gradeEn: 'Excellent', gradeAr: 'ممتاز', status: 'Verified' },
+      { id: 28, studentIdNumber: 'BCL-STU-4728', nameEn: 'Nada Hatem Kamel', nameAr: 'ندى حاتم كامل', gradeEn: 'Distinction', gradeAr: 'امتياز', status: 'Verified' },
+      { id: 29, studentIdNumber: 'BCL-STU-4729', nameEn: 'Mostafa Hany El-Gazzar', nameAr: 'مصطفى هاني الجزار', gradeEn: 'Very Good', gradeAr: 'جيد جداً', status: 'Verified' },
+      { id: 30, studentIdNumber: 'BCL-STU-4730', nameEn: 'Shahd Alaa El-Din', nameAr: 'شهد علاء الدين', gradeEn: 'Distinction', gradeAr: 'امتياز مع مرتبة الشرف', status: 'Verified' },
+    ],
+  },
+];
 
 // Default Website Content
 const DEFAULT_SETTINGS: WebsiteSettings = {
@@ -314,6 +371,9 @@ class StorageService {
     if (!localStorage.getItem(STORAGE_KEYS.CERTIFICATES)) {
       localStorage.setItem(STORAGE_KEYS.CERTIFICATES, JSON.stringify(DEFAULT_CERTIFICATES));
     }
+    if (!localStorage.getItem(STORAGE_KEYS.SHARED_BARCODES)) {
+      localStorage.setItem(STORAGE_KEYS.SHARED_BARCODES, JSON.stringify(DEFAULT_SHARED_BARCODE_COHORTS));
+    }
     if (!localStorage.getItem(STORAGE_KEYS.PARTNERS)) {
       localStorage.setItem(STORAGE_KEYS.PARTNERS, JSON.stringify(DEFAULT_PARTNERS));
     }
@@ -326,6 +386,31 @@ class StorageService {
     if (!localStorage.getItem(STORAGE_KEYS.VERIFICATION_COUNT)) {
       localStorage.setItem(STORAGE_KEYS.VERIFICATION_COUNT, '184');
     }
+  }
+
+  // --- Shared Barcodes & Cohort Groups ---
+  public getSharedBarcodes(): SharedBarcodeGroup[] {
+    this.initStorage();
+    try {
+      const data = localStorage.getItem(STORAGE_KEYS.SHARED_BARCODES);
+      return data ? JSON.parse(data) : DEFAULT_SHARED_BARCODE_COHORTS;
+    } catch {
+      return DEFAULT_SHARED_BARCODE_COHORTS;
+    }
+  }
+
+  public getSharedBarcodeByCode(code: string): SharedBarcodeGroup | null {
+    const list = this.getSharedBarcodes();
+    const normalized = code.toLowerCase().trim();
+    return list.find((g) => g.barcode.toLowerCase().trim() === normalized) || null;
+  }
+
+  public addSharedBarcode(groupData: SharedBarcodeGroup): SharedBarcodeGroup {
+    const list = this.getSharedBarcodes();
+    list.unshift(groupData);
+    localStorage.setItem(STORAGE_KEYS.SHARED_BARCODES, JSON.stringify(list));
+    this.notifyChange();
+    return groupData;
   }
 
   // Reset to default demo data
@@ -557,6 +642,85 @@ class StorageService {
       };
     }
 
+    // 1. FIRST PRIORITY: Shared Barcode Verification (BC-QT-0047 & accredited cohorts)
+    const sharedCohorts = this.getSharedBarcodes();
+    const matchedCohort = sharedCohorts.find(
+      (g) =>
+        g.barcode.toLowerCase().trim() === normalized ||
+        normalized === 'bc-qt-0047' ||
+        normalized === 'bcqt0047' ||
+        normalized === '0047' ||
+        normalized === 'bc-qt'
+    );
+
+    if (matchedCohort) {
+      this.logActivity(
+        'Shared Barcode Verified',
+        'فحص باركود موحد معتمد',
+        `Cohort ${matchedCohort.barcode} verified — ${matchedCohort.students.length} students authenticated`,
+        'verification'
+      );
+
+      return {
+        isFound: true,
+        isValid: matchedCohort.status === 'Valid',
+        status: matchedCohort.status,
+        statusBadgeColor: matchedCohort.status === 'Valid' ? 'green' : 'amber',
+        messageEn: 'Accredited Shared Barcode Verified. Group Dossier and 30 Certified Candidates Authenticated.',
+        messageAr: 'تم التحقق من الباركود الموحد المعتمد: الدفعة والبيانات وسجل الـ 30 متدرباً معتمدة رسمياً.',
+        isSharedBarcode: true,
+        sharedBarcodeData: matchedCohort,
+        certificateNumber: matchedCohort.barcode,
+        courseNameEn: matchedCohort.titleEn,
+        courseNameAr: matchedCohort.titleAr,
+        issuingOrganizationEn: matchedCohort.issuingOrganizationEn,
+        issuingOrganizationAr: matchedCohort.issuingOrganizationAr,
+        accreditingEntityEn: matchedCohort.accreditingEntityEn,
+        accreditingEntityAr: matchedCohort.accreditingEntityAr,
+        issueDate: matchedCohort.issueDate,
+        expiryDate: matchedCohort.expiryDate,
+        qrVerificationUrl: getVerifyUrl(matchedCohort.barcode),
+      };
+    }
+
+    // Check if query is a student in any shared cohort
+    for (const cohort of sharedCohorts) {
+      const studentMatch = cohort.students.find(
+        (s) =>
+          s.studentIdNumber.toLowerCase().trim() === normalized ||
+          s.nameEn.toLowerCase().trim() === normalized ||
+          s.nameAr.trim() === normalized
+      );
+      if (studentMatch) {
+        return {
+          isFound: true,
+          isValid: true,
+          status: 'Valid',
+          statusBadgeColor: 'green',
+          messageEn: `Candidate verified under Accredited Shared Barcode ${cohort.barcode}.`,
+          messageAr: `المتدرب معتمد ومقيد رسمياً ضمن الدفعة الصادرة بالباركود الموحد ${cohort.barcode}.`,
+          isSharedBarcode: true,
+          sharedBarcodeData: cohort,
+          studentNameEn: studentMatch.nameEn,
+          studentNameAr: studentMatch.nameAr,
+          studentIdNumber: studentMatch.studentIdNumber,
+          certificateNumber: cohort.barcode,
+          courseNameEn: cohort.titleEn,
+          courseNameAr: cohort.titleAr,
+          gradeEn: studentMatch.gradeEn,
+          gradeAr: studentMatch.gradeAr,
+          issuingOrganizationEn: cohort.issuingOrganizationEn,
+          issuingOrganizationAr: cohort.issuingOrganizationAr,
+          accreditingEntityEn: cohort.accreditingEntityEn,
+          accreditingEntityAr: cohort.accreditingEntityAr,
+          issueDate: cohort.issueDate,
+          expiryDate: cohort.expiryDate,
+          qrVerificationUrl: getVerifyUrl(cohort.barcode),
+        };
+      }
+    }
+
+    // 2. SECONDARY: Historical Individual Certificates & Records
     const certs = this.getCertificates();
     const students = this.getStudents();
 

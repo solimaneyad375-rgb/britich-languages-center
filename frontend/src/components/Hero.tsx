@@ -17,7 +17,7 @@ interface HeroProps {
 export const Hero: React.FC<HeroProps> = ({ navigate: propNavigate }) => {
   const routerNavigate = useNavigate();
   const navigate = propNavigate || routerNavigate;
-  const { lang, isRtl } = useLanguage();
+  const { lang, isRtl, t } = useLanguage();
   const ArrowIcon = isRtl ? ArrowLeft : ArrowRight;
   const heroBgWebp = getAssetUrl('assets/big-ben-hero.webp');
 
@@ -114,7 +114,7 @@ export const Hero: React.FC<HeroProps> = ({ navigate: propNavigate }) => {
               className="h-12 sm:h-13 px-6 sm:px-7 bg-[#07182D]/70 hover:bg-[#102B4C]/80 border border-[#C9A34A]/70 hover:border-[#C9A34A] text-[#F8F9FC] hover:text-[#DFC075] text-sm sm:text-base font-semibold rounded-xs backdrop-blur-xs transition-all duration-200 inline-flex items-center justify-center gap-2 cursor-pointer shadow-md"
             >
               <ShieldCheck className="w-4 h-4 text-[#DFC075]" />
-              <span>{lang === 'ar' ? 'التحقق من الشهادات' : 'Verify Certificates'}</span>
+              <span>{t('heroCtaVerify')}</span>
             </button>
           </div>
         </div>
