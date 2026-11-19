@@ -104,6 +104,26 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate: propNa
   const [qrModalCert, setQrModalCert] = useState<Certificate | null>(null);
   const qrCanvasRef = useRef<HTMLCanvasElement | null>(null);
 
+  // Shared Barcode Modal states
+  const [isAddBarcodeOpen, setIsAddBarcodeOpen] = useState(false);
+  const [editingBarcode, setEditingBarcode] = useState<SharedBarcodeGroup | null>(null);
+  const [newBarcode, setNewBarcode] = useState({
+    barcode: 'BC-QT-0048',
+    batchNumber: 'BATCH-2026-UK48',
+    titleAr: 'الدبلوم المهني المتقدم في القيادة المؤسسية واللغة الإنجليزية للأعمال',
+    titleEn: 'Executive Diploma in Institutional Leadership & Business English',
+    maxCapacity: 30,
+    enrolledCount: 30,
+    issuingOrganizationAr: 'المركز البريطاني لتعليم اللغات',
+    issuingOrganizationEn: 'British Center for Languages',
+    accreditingEntityAr: 'التعليم والتدريب الدولي بالمملكة المتحدة',
+    accreditingEntityEn: 'UK International Education & Training',
+    issueDate: new Date().toISOString().split('T')[0],
+    expiryDate: '',
+    status: 'Valid' as 'Valid' | 'Revoked' | 'Expired' | 'Pending',
+    notes: '',
+  });
+
   // Form states for adding
   const [newStudent, setNewStudent] = useState<{
     studentIdNumber: string;
@@ -247,6 +267,61 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate: propNa
     if (confirm(lang === 'ar' ? 'هل أنت متأكد من حذف سجل هذا الطالب؟' : 'Are you sure you want to delete this student record?')) {
       await api.deleteStudent(id);
       loadAllData();
+    }
+  };
+
+  // Shared Barcode Actions
+  const handleCreateBarcode = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const created: SharedBarcodeGroup = {
+        id: Date.now(),
+        barcode: newBarcode.barcode.trim().toUpperCase(),
+        batchNumber: newBarcode.batchNumber.trim() || `BATCH-2026-${newBarcode.barcode.trim()}`,
+        titleAr: newBarcode.titleAr.trim(),
+        titleEn: newBarcode.titleEn.trim(),
+        maxCapacity: Number(newBarcode.maxCapacity) || 30,
+        enrolledCount: Number(newBarcode.enrolledCount) || 30,
+        issuingOrganizationAr: newBarcode.issuingOrganizationAr,
+        issuingOrganizationEn: newBarcode.issuingOrganizationEn,
+        accreditingEntityAr: newBarcode.accreditingEntityAr,
+        accreditingEntityEn: newBarcode.accreditingEntityEn,
+        issueDate: newBarcode.issueDate,
+        expiryDate: newBarcode.expiryDate || undefined,
+        status: newBarcode.status,
+        notes: newBarcode.notes,
+        students: [],
+        createdAt: new Date().toISOString(),
+      };
+      await api.addSharedBarcode(created);
+      setIsAddBarcodeOpen(false);
+      await loadAllData();
+      setSelectedCohort(created);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleUpdateBarcode = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingBarcode) return;
+    try {
+      await api.updateSharedBarcode(editingBarcode.id, editingBarcode);
+      setEditingBarcode(null);
+      await loadAllData();
+      setSelectedCohort(editingBarcode);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleDeleteBarcode = async (id: number) => {
+    if (confirm(lang === 'ar' ? 'هل أنت متأكد من حذف هذا الباركود الموحد؟' : 'Are you sure you want to delete this shared barcode?')) {
+      await api.deleteSharedBarcode(id);
+      await loadAllData();
+      if (selectedCohort?.id === id) {
+        setSelectedCohort(sharedCohorts.find((c) => c.id !== id) || null);
+      }
     }
   };
 
@@ -891,9 +966,16 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate: propNa
                 </p>
               </div>
 
-              <div className="flex items-center gap-2.5 shrink-0">
+              <div className="flex items-center gap-2.5 shrink-0 flex-wrap">
                 <button
-                  onClick={() => navigate('/verify?code=BC-QT-0047')}
+                  onClick={() => setIsAddBarcodeOpen(true)}
+                  className="px-4 py-2.5 rounded-xs bg-[#C5A04B] hover:bg-[#DFC075] text-[#08182E] text-xs font-bold flex items-center gap-2 shadow-md shrink-0 cursor-pointer transition-colors"
+                >
+                  <Plus className="w-4 h-4 text-[#08182E]" />
+                  <span>{lang === 'ar' ? 'إضافة باركود جديد' : 'Add New Barcode'}</span>
+                </button>
+                <button
+                  onClick={() => navigate(`/verify?code=${selectedCohort?.barcode || 'BC-QT-0047'}`)}
                   className="px-4 py-2.5 rounded-xs bg-[#08182E] text-[#DFC075] border border-[rgba(197,160,75,0.4)] hover:bg-[#1A375E] text-xs font-bold flex items-center gap-2 shadow-md cursor-pointer transition-colors"
                 >
                   <ExternalLink className="w-3.5 h-3.5 text-[#DFC075]" />
@@ -901,125 +983,146 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate: propNa
                 </button>
                 <button
                   onClick={() => setIsIssueCertOpen(true)}
-                  className="px-4 py-2.5 rounded-xs bg-[#C5A04B] hover:bg-[#DFC075] text-[#08182E] text-xs font-bold flex items-center gap-2 shadow-md shrink-0 cursor-pointer transition-colors"
+                  className="px-4 py-2.5 rounded-xs bg-[#152B49] hover:bg-[#1A375E] text-white border border-white/10 text-xs font-bold flex items-center gap-2 shadow-md shrink-0 cursor-pointer transition-colors"
                 >
-                  <Plus className="w-4 h-4 text-[#08182E]" />
+                  <Plus className="w-4 h-4 text-[#C5A04B]" />
                   <span>{t('adminIssueCert')}</span>
                 </button>
               </div>
             </div>
 
-            {/* 2. SECTION: SHARED BARCODE COHORTS (PRIMARY SECTION) */}
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
+            {/* 2. SECTION: SHARED BARCODES (PRIMARY MANAGEMENT SECTION) */}
+            <div className="space-y-5">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div className="flex items-center gap-2">
                   <div className="w-2.5 h-2.5 rounded-full bg-[#C5A04B] animate-pulse" />
                   <h2 className="text-lg font-bold text-white font-serif">
-                    {lang === 'ar' ? 'دفعة الباركود الموحد المعتمدة: BC-QT-0047' : 'Accredited Shared Barcode Cohort: BC-QT-0047'}
+                    {lang === 'ar' ? 'قائمة الباركودات الموحدة المسجلة' : 'Registered Shared Barcodes Ledger'}
                   </h2>
                   <span className="text-xs font-mono px-2 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 font-bold">
-                    30 / 30 {lang === 'ar' ? 'طالباً معتمداً' : 'Students Enrolled'}
+                    {sharedCohorts.length} {lang === 'ar' ? 'باركود مسجل' : 'Registered'}
                   </span>
+                </div>
+
+                <button
+                  onClick={() => setIsAddBarcodeOpen(true)}
+                  className="px-3.5 py-1.5 rounded-xs bg-[#C5A04B] hover:bg-[#DFC075] text-[#08182E] text-xs font-bold flex items-center gap-1.5 shadow-sm shrink-0 cursor-pointer self-start sm:self-auto"
+                >
+                  <Plus className="w-3.5 h-3.5 text-[#08182E]" />
+                  <span>{lang === 'ar' ? 'إضافة باركود جديد' : 'Add Barcode'}</span>
+                </button>
+              </div>
+
+              {/* Barcodes Table */}
+              <div className="bg-[#152B49] rounded-xs shadow-xl border border-[rgba(197,160,75,0.22)] overflow-hidden">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-xs text-start">
+                    <thead className="bg-[#08182E] border-b border-[rgba(197,160,75,0.2)] text-[#DFC075] uppercase text-[10px] font-mono">
+                      <tr>
+                        <th className="py-3 px-4">كود الباركود / Barcode</th>
+                        <th className="py-3 px-4">اسم البرنامج / Course Title</th>
+                        <th className="py-3 px-4">تاريخ الإصدار</th>
+                        <th className="py-3 px-4">السعة المعتمدة</th>
+                        <th className="py-3 px-4">الحالة</th>
+                        <th className="py-3 px-4 text-center">إجراءات الإدارة</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-white/5">
+                      {sharedCohorts.map((cohort) => (
+                        <tr
+                          key={cohort.id}
+                          className={`hover:bg-[#1A375E]/60 transition-colors ${
+                            selectedCohort?.id === cohort.id ? 'bg-[#1A375E]/40 border-r-2 rtl:border-r-0 rtl:border-l-2 border-[#C5A04B]' : ''
+                          }`}
+                        >
+                          <td className="py-3 px-4 font-mono font-bold text-[#DFC075] text-sm">
+                            {cohort.barcode}
+                          </td>
+                          <td className="py-3 px-4">
+                            <div className="font-bold text-white">{lang === 'ar' ? cohort.titleAr : cohort.titleEn}</div>
+                            <div className="text-[11px] font-mono text-slate-400">{cohort.batchNumber}</div>
+                          </td>
+                          <td className="py-3 px-4 text-slate-400 font-mono">
+                            {cohort.issueDate}
+                          </td>
+                          <td className="py-3 px-4 font-mono font-bold text-[#DFC075]">
+                            {cohort.enrolledCount || cohort.students?.length || 30} / {cohort.maxCapacity || 30}
+                          </td>
+                          <td className="py-3 px-4">
+                            <span
+                              className={`px-2.5 py-0.5 rounded-xs text-[10px] font-bold ${
+                                cohort.status === 'Valid'
+                                  ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
+                                  : cohort.status === 'Revoked'
+                                  ? 'bg-rose-500/20 text-rose-300 border border-rose-500/30'
+                                  : 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
+                              }`}
+                            >
+                              {cohort.status === 'Valid' ? (lang === 'ar' ? 'معتمد وسارٍ' : 'Valid') : cohort.status}
+                            </span>
+                          </td>
+                          <td className="py-3 px-4 text-center">
+                            <div className="flex items-center justify-center gap-1.5">
+                              {/* Preview / Select */}
+                              <button
+                                onClick={() => setSelectedCohort(cohort)}
+                                className="px-2.5 py-1 rounded-xs bg-[#08182E] text-[#DFC075] border border-[rgba(197,160,75,0.3)] hover:bg-[#C5A04B] hover:text-[#08182E] font-bold text-[10px] transition-colors cursor-pointer"
+                                title="معاينة بطاقة الباركود"
+                              >
+                                {lang === 'ar' ? 'معاينة' : 'Preview'}
+                              </button>
+
+                              {/* Open in Public Verify */}
+                              <button
+                                onClick={() => navigate(`/verify?code=${cohort.barcode}`)}
+                                className="px-2.5 py-1 rounded-xs bg-[#102F5C] text-white hover:bg-[#1A3F7A] font-bold text-[10px] transition-colors cursor-pointer"
+                                title="فحص بالبوابة العامة"
+                              >
+                                {lang === 'ar' ? 'فحص بالبوابة' : 'Verify'}
+                              </button>
+
+                              {/* Edit Barcode */}
+                              <button
+                                onClick={() => setEditingBarcode({ ...cohort })}
+                                className="p-1 rounded-xs text-slate-400 hover:text-[#DFC075] hover:bg-[#08182E] transition-colors cursor-pointer"
+                                title="تعديل بيانات الباركود"
+                              >
+                                <Edit className="w-3.5 h-3.5" />
+                              </button>
+
+                              {/* Delete Barcode */}
+                              <button
+                                onClick={() => handleDeleteBarcode(cohort.id)}
+                                className="p-1 rounded-xs text-slate-400 hover:text-rose-400 hover:bg-rose-950/40 transition-colors cursor-pointer"
+                                title="حذف الباركود"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
               </div>
 
-              {/* Shared Barcode Component Showcase */}
-              {selectedCohort ? (
-                <div className="space-y-4">
-                  <SharedBarcodeCard cohort={selectedCohort} lang={lang} />
-
-                  {/* Student Cohort Roster Table (30 Students) */}
-                  <div className="bg-[#152B49] rounded-xs shadow-xl border border-[rgba(197,160,75,0.22)] overflow-hidden">
-                    <div className="p-4 bg-[#0B1E38] border-b border-[rgba(197,160,75,0.2)] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                      <div>
-                        <h3 className="text-sm font-bold text-white font-serif">
-                          {lang === 'ar' ? 'كشف الطلاب المعتمدين بالدفعة (30 طالباً)' : 'Accredited Student Cohort Roster (30 Students)'}
-                        </h3>
-                        <p className="text-[11px] text-slate-400 font-mono">
-                          {lang === 'ar' ? 'سجلات الطلاب الموثقة بالباركود الموحد BC-QT-0047' : 'Verified records under shared barcode BC-QT-0047'}
-                        </p>
-                      </div>
-
-                      {/* Filter inside cohort */}
-                      <div className="relative w-full sm:w-72">
-                        <Search className="w-3.5 h-3.5 absolute inset-y-0 start-3 my-auto text-slate-400" />
-                        <input
-                          type="text"
-                          value={cohortStudentSearch}
-                          onChange={(e) => setCohortStudentSearch(e.target.value)}
-                          placeholder={lang === 'ar' ? 'بحث بالاسم، كود الطالب، أو التخصص...' : 'Filter student in cohort...'}
-                          className="w-full ps-8 pe-3 py-1.5 bg-[#08182E] border border-[rgba(197,160,75,0.3)] rounded-xs text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-[#C5A04B]"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="overflow-x-auto max-h-96 overflow-y-auto">
-                      <table className="w-full text-xs text-start">
-                        <thead className="bg-[#08182E] sticky top-0 border-b border-[rgba(197,160,75,0.2)] text-[#DFC075] uppercase text-[10px] font-mono z-10">
-                          <tr>
-                            <th className="py-2.5 px-3 text-center">#</th>
-                            <th className="py-2.5 px-4">{lang === 'ar' ? 'كود الطالب' : 'Student ID'}</th>
-                            <th className="py-2.5 px-4">{lang === 'ar' ? 'اسم الطالب (عربي / إنجليزي)' : 'Student Name (AR/EN)'}</th>
-                            <th className="py-2.5 px-4">{lang === 'ar' ? 'البرنامج التدريبي' : 'Program / Specialization'}</th>
-                            <th className="py-2.5 px-4">{lang === 'ar' ? 'التقدير' : 'Grade'}</th>
-                            <th className="py-2.5 px-4 text-center">{lang === 'ar' ? 'الحالة' : 'Status'}</th>
-                            <th className="py-2.5 px-4 text-center">{lang === 'ar' ? 'إجراء' : 'Action'}</th>
-                          </tr>
-                        </thead>
-                        <tbody className="divide-y divide-white/5 font-sans">
-                          {selectedCohort.students
-                            .filter((st, idx) => {
-                              if (!cohortStudentSearch.trim()) return true;
-                              const q = cohortStudentSearch.toLowerCase();
-                              return (
-                                st.nameEn.toLowerCase().includes(q) ||
-                                st.nameAr.includes(q) ||
-                                st.studentIdNumber.toLowerCase().includes(q) ||
-                                String(st.id || idx + 1).includes(q)
-                              );
-                            })
-                            .map((st, idx) => (
-                              <tr key={st.id || idx} className="hover:bg-[#1A375E]/60 transition-colors">
-                                <td className="py-2 px-3 text-center font-mono font-bold text-slate-400">
-                                  {idx + 1}
-                                </td>
-                                <td className="py-2 px-4 font-mono font-bold text-[#DFC075]">
-                                  {st.studentIdNumber}
-                                </td>
-                                <td className="py-2 px-4">
-                                  <div className="font-bold text-white">{lang === 'ar' ? st.nameAr : st.nameEn}</div>
-                                  <div className="text-[11px] text-slate-400 font-normal">
-                                    {lang === 'ar' ? st.nameEn : st.nameAr}
-                                  </div>
-                                </td>
-                                <td className="py-2 px-4 text-[#B8C5D6] max-w-xs truncate">
-                                  {lang === 'ar' ? selectedCohort.titleAr : selectedCohort.titleEn}
-                                </td>
-                                <td className="py-2 px-4 font-semibold text-slate-300">
-                                  {lang === 'ar' ? (st.gradeAr || 'امتياز') : (st.gradeEn || 'Distinction')}
-                                </td>
-                                <td className="py-2 px-4 text-center">
-                                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/15 border border-emerald-500/30 text-emerald-400">
-                                    {lang === 'ar' ? 'معتمد رسمي' : 'Verified'}
-                                  </span>
-                                </td>
-                                <td className="py-2 px-4 text-center">
-                                  <button
-                                    onClick={() => navigate(`/verify?code=${st.studentIdNumber}`)}
-                                    className="px-2 py-1 rounded-xs bg-[#08182E] text-[#DFC075] border border-[rgba(197,160,75,0.3)] hover:bg-[#C5A04B] hover:text-[#08182E] font-bold text-[10px] transition-colors cursor-pointer"
-                                    title="Verify Student via Portal"
-                                  >
-                                    {lang === 'ar' ? 'فحص السجل' : 'Verify'}
-                                  </button>
-                                </td>
-                              </tr>
-                            ))}
-                        </tbody>
-                      </table>
-                    </div>
+              {/* Selected Barcode Document Card Preview */}
+              {selectedCohort && (
+                <div className="pt-2 space-y-3">
+                  <div className="flex items-center justify-between text-xs font-bold text-[#DFC075]">
+                    <span>{lang === 'ar' ? `معاينة وثيقة الباركود المحددة: ${selectedCohort.barcode}` : `Selected Barcode Preview: ${selectedCohort.barcode}`}</span>
+                    <button
+                      onClick={() => setEditingBarcode({ ...selectedCohort })}
+                      className="inline-flex items-center gap-1 text-xs text-[#DFC075] hover:underline cursor-pointer"
+                    >
+                      <Edit className="w-3.5 h-3.5" />
+                      <span>{lang === 'ar' ? 'تعديل هذا الباركود' : 'Edit This Barcode'}</span>
+                    </button>
                   </div>
+                  <SharedBarcodeCard cohort={selectedCohort} lang={lang} />
                 </div>
-              ) : null}
+              )}
             </div>
 
             {/* 3. SECTION: HISTORICAL CERTIFICATES ARCHIVE (PRESERVED) */}
@@ -2111,6 +2214,270 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ navigate: propNa
                 Close Preview
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL: ADD SHARED BARCODE */}
+      {isAddBarcodeOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm overflow-y-auto">
+          <div className="bg-[#152B49] rounded-xs max-w-xl w-full p-6 sm:p-7 shadow-2xl border border-[rgba(197,160,75,0.35)] space-y-4 max-h-[90vh] overflow-y-auto text-white">
+            <div className="flex justify-between items-center pb-3 border-b border-[rgba(197,160,75,0.2)]">
+              <h3 className="font-bold text-lg text-white font-serif">
+                {lang === 'ar' ? 'إضافة باركود موحد جديد' : 'Add New Shared Barcode'}
+              </h3>
+              <button onClick={() => setIsAddBarcodeOpen(false)} className="text-slate-400 hover:text-white cursor-pointer">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleCreateBarcode} className="space-y-3 text-xs">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-bold mb-1 text-[#DFC075]">
+                    {lang === 'ar' ? 'كود الباركود (مثال: BC-QT-0048)' : 'Barcode Code'}
+                  </label>
+                  <input
+                    type="text"
+                    value={newBarcode.barcode}
+                    onChange={(e) => setNewBarcode({ ...newBarcode, barcode: e.target.value })}
+                    className="w-full p-2 bg-[#08182E] border border-[rgba(197,160,75,0.3)] rounded-xs font-mono font-bold text-white focus:border-[#C5A04B] focus:outline-none"
+                    placeholder="BC-QT-0048"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block font-bold mb-1 text-[#DFC075]">
+                    {lang === 'ar' ? 'رقم الدفعة (Batch No)' : 'Batch Number'}
+                  </label>
+                  <input
+                    type="text"
+                    value={newBarcode.batchNumber}
+                    onChange={(e) => setNewBarcode({ ...newBarcode, batchNumber: e.target.value })}
+                    className="w-full p-2 bg-[#08182E] border border-[rgba(197,160,75,0.3)] rounded-xs font-mono text-white focus:border-[#C5A04B] focus:outline-none"
+                    placeholder="BATCH-2026-UK48"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block font-bold mb-1 text-[#DFC075]">
+                  {lang === 'ar' ? 'اسم البرنامج التدريبي / الشهادة (عربي)' : 'Course / Program Title (Arabic)'}
+                </label>
+                <input
+                  type="text"
+                  value={newBarcode.titleAr}
+                  onChange={(e) => setNewBarcode({ ...newBarcode, titleAr: e.target.value })}
+                  className="w-full p-2 bg-[#08182E] border border-[rgba(197,160,75,0.3)] rounded-xs text-white focus:border-[#C5A04B] focus:outline-none"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold mb-1 text-[#DFC075]">
+                  {lang === 'ar' ? 'اسم البرنامج التدريبي (إنجليزي)' : 'Course / Program Title (English)'}
+                </label>
+                <input
+                  type="text"
+                  value={newBarcode.titleEn}
+                  onChange={(e) => setNewBarcode({ ...newBarcode, titleEn: e.target.value })}
+                  className="w-full p-2 bg-[#08182E] border border-[rgba(197,160,75,0.3)] rounded-xs text-white focus:border-[#C5A04B] focus:outline-none"
+                  required
+                />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div>
+                  <label className="block font-bold mb-1 text-[#DFC075]">
+                    {lang === 'ar' ? 'تاريخ الإصدار' : 'Issue Date'}
+                  </label>
+                  <input
+                    type="date"
+                    value={newBarcode.issueDate}
+                    onChange={(e) => setNewBarcode({ ...newBarcode, issueDate: e.target.value })}
+                    className="w-full p-2 bg-[#08182E] border border-[rgba(197,160,75,0.3)] rounded-xs text-white focus:border-[#C5A04B] focus:outline-none"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block font-bold mb-1 text-[#DFC075]">
+                    {lang === 'ar' ? 'السعة المعتمدة' : 'Capacity'}
+                  </label>
+                  <input
+                    type="number"
+                    value={newBarcode.maxCapacity}
+                    onChange={(e) => setNewBarcode({ ...newBarcode, maxCapacity: Number(e.target.value) })}
+                    className="w-full p-2 bg-[#08182E] border border-[rgba(197,160,75,0.3)] rounded-xs text-white focus:border-[#C5A04B] focus:outline-none"
+                    min="1"
+                    max="100"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block font-bold mb-1 text-[#DFC075]">
+                    {lang === 'ar' ? 'الحالة' : 'Status'}
+                  </label>
+                  <select
+                    value={newBarcode.status}
+                    onChange={(e) => setNewBarcode({ ...newBarcode, status: e.target.value as any })}
+                    className="w-full p-2 bg-[#08182E] border border-[rgba(197,160,75,0.3)] rounded-xs text-white focus:border-[#C5A04B] focus:outline-none"
+                  >
+                    <option value="Valid">Valid (سارٍ ومعتمد)</option>
+                    <option value="Pending">Pending (قيد المراجعة)</option>
+                    <option value="Revoked">Revoked (ملغى)</option>
+                    <option value="Expired">Expired (منتهي الصلاحية)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="pt-3 border-t border-[rgba(197,160,75,0.2)] flex justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => setIsAddBarcodeOpen(false)}
+                  className="px-4 py-2 rounded-xs bg-[#08182E] text-slate-300 hover:text-white border border-white/10 cursor-pointer"
+                >
+                  {lang === 'ar' ? 'إلغاء' : 'Cancel'}
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2 rounded-xs bg-[#C5A04B] hover:bg-[#DFC075] text-[#08182E] font-bold cursor-pointer"
+                >
+                  {lang === 'ar' ? 'حفظ وإضافة الباركود' : 'Save & Add Barcode'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL: EDIT SHARED BARCODE */}
+      {editingBarcode && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm overflow-y-auto">
+          <div className="bg-[#152B49] rounded-xs max-w-xl w-full p-6 sm:p-7 shadow-2xl border border-[rgba(197,160,75,0.35)] space-y-4 max-h-[90vh] overflow-y-auto text-white">
+            <div className="flex justify-between items-center pb-3 border-b border-[rgba(197,160,75,0.2)]">
+              <h3 className="font-bold text-lg text-white font-serif">
+                {lang === 'ar' ? `تعديل الباركود الموحد: ${editingBarcode.barcode}` : `Edit Shared Barcode: ${editingBarcode.barcode}`}
+              </h3>
+              <button onClick={() => setEditingBarcode(null)} className="text-slate-400 hover:text-white cursor-pointer">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleUpdateBarcode} className="space-y-3 text-xs">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-bold mb-1 text-[#DFC075]">
+                    {lang === 'ar' ? 'كود الباركود' : 'Barcode Code'}
+                  </label>
+                  <input
+                    type="text"
+                    value={editingBarcode.barcode}
+                    onChange={(e) => setEditingBarcode({ ...editingBarcode, barcode: e.target.value })}
+                    className="w-full p-2 bg-[#08182E] border border-[rgba(197,160,75,0.3)] rounded-xs font-mono font-bold text-white focus:border-[#C5A04B] focus:outline-none"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block font-bold mb-1 text-[#DFC075]">
+                    {lang === 'ar' ? 'رقم الدفعة' : 'Batch Number'}
+                  </label>
+                  <input
+                    type="text"
+                    value={editingBarcode.batchNumber}
+                    onChange={(e) => setEditingBarcode({ ...editingBarcode, batchNumber: e.target.value })}
+                    className="w-full p-2 bg-[#08182E] border border-[rgba(197,160,75,0.3)] rounded-xs font-mono text-white focus:border-[#C5A04B] focus:outline-none"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block font-bold mb-1 text-[#DFC075]">
+                  {lang === 'ar' ? 'اسم البرنامج التدريبي (عربي)' : 'Course / Program Title (Arabic)'}
+                </label>
+                <input
+                  type="text"
+                  value={editingBarcode.titleAr}
+                  onChange={(e) => setEditingBarcode({ ...editingBarcode, titleAr: e.target.value })}
+                  className="w-full p-2 bg-[#08182E] border border-[rgba(197,160,75,0.3)] rounded-xs text-white focus:border-[#C5A04B] focus:outline-none"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold mb-1 text-[#DFC075]">
+                  {lang === 'ar' ? 'اسم البرنامج التدريبي (إنجليزي)' : 'Course / Program Title (English)'}
+                </label>
+                <input
+                  type="text"
+                  value={editingBarcode.titleEn}
+                  onChange={(e) => setEditingBarcode({ ...editingBarcode, titleEn: e.target.value })}
+                  className="w-full p-2 bg-[#08182E] border border-[rgba(197,160,75,0.3)] rounded-xs text-white focus:border-[#C5A04B] focus:outline-none"
+                  required
+                />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div>
+                  <label className="block font-bold mb-1 text-[#DFC075]">
+                    {lang === 'ar' ? 'تاريخ الإصدار' : 'Issue Date'}
+                  </label>
+                  <input
+                    type="date"
+                    value={editingBarcode.issueDate}
+                    onChange={(e) => setEditingBarcode({ ...editingBarcode, issueDate: e.target.value })}
+                    className="w-full p-2 bg-[#08182E] border border-[rgba(197,160,75,0.3)] rounded-xs text-white focus:border-[#C5A04B] focus:outline-none"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block font-bold mb-1 text-[#DFC075]">
+                    {lang === 'ar' ? 'السعة المعتمدة' : 'Capacity'}
+                  </label>
+                  <input
+                    type="number"
+                    value={editingBarcode.maxCapacity}
+                    onChange={(e) => setEditingBarcode({ ...editingBarcode, maxCapacity: Number(e.target.value) })}
+                    className="w-full p-2 bg-[#08182E] border border-[rgba(197,160,75,0.3)] rounded-xs text-white focus:border-[#C5A04B] focus:outline-none"
+                    min="1"
+                    max="100"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block font-bold mb-1 text-[#DFC075]">
+                    {lang === 'ar' ? 'الحالة' : 'Status'}
+                  </label>
+                  <select
+                    value={editingBarcode.status}
+                    onChange={(e) => setEditingBarcode({ ...editingBarcode, status: e.target.value as any })}
+                    className="w-full p-2 bg-[#08182E] border border-[rgba(197,160,75,0.3)] rounded-xs text-white focus:border-[#C5A04B] focus:outline-none"
+                  >
+                    <option value="Valid">Valid (سارٍ ومعتمد)</option>
+                    <option value="Pending">Pending (قيد المراجعة)</option>
+                    <option value="Revoked">Revoked (ملغى)</option>
+                    <option value="Expired">Expired (منتهي الصلاحية)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="pt-3 border-t border-[rgba(197,160,75,0.2)] flex justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => setEditingBarcode(null)}
+                  className="px-4 py-2 rounded-xs bg-[#08182E] text-slate-300 hover:text-white border border-white/10 cursor-pointer"
+                >
+                  {lang === 'ar' ? 'إلغاء' : 'Cancel'}
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2 rounded-xs bg-[#C5A04B] hover:bg-[#DFC075] text-[#08182E] font-bold cursor-pointer"
+                >
+                  {lang === 'ar' ? 'حفظ التعديلات' : 'Save Changes'}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

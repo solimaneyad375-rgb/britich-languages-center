@@ -225,15 +225,20 @@ class DataStore {
     );
 
     if (matchedCohort) {
+      const publicCohort = {
+        ...matchedCohort,
+        students: [], // Confidential
+      };
+
       return {
         isFound: true,
         isValid: matchedCohort.status === 'Valid',
         status: matchedCohort.status,
         statusBadgeColor: matchedCohort.status === 'Valid' ? 'green' : 'amber',
-        messageEn: 'Accredited Shared Barcode Verified. Group Dossier and 30 Certified Candidates Authenticated.',
-        messageAr: 'تم التحقق من الباركود الموحد المعتمد: الدفعة والبيانات وسجل الـ 30 متدرباً معتمدة رسمياً.',
+        messageEn: `Accredited Shared Barcode Verified. Barcode ${matchedCohort.barcode} is authentic, valid, and registered in the central UK ledger of the British Center for Languages.`,
+        messageAr: `تم التحقق من الباركود الموحد المعتمد: كود الباركود (${matchedCohort.barcode}) معتمد وسارٍ رسمياً ومسجل في قاعدة البيانات المركزية للمركز البريطاني لتعليم اللغات بالمملكة المتحدة.`,
         isSharedBarcode: true,
-        sharedBarcodeData: matchedCohort,
+        sharedBarcodeData: publicCohort,
         certificateNumber: matchedCohort.barcode,
         courseNameEn: matchedCohort.titleEn,
         courseNameAr: matchedCohort.titleAr,

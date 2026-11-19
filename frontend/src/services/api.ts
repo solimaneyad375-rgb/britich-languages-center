@@ -130,6 +130,14 @@ export const api = {
     return storage.addSharedBarcode(group);
   },
 
+  async updateSharedBarcode(id: number, updates: Partial<SharedBarcodeGroup>): Promise<SharedBarcodeGroup | null> {
+    return storage.updateSharedBarcode(id, updates);
+  },
+
+  async deleteSharedBarcode(id: number): Promise<boolean> {
+    return storage.deleteSharedBarcode(id);
+  },
+
   // --- Students CRUD ---
   async getStudents(): Promise<Student[]> {
     return storage.getStudents();

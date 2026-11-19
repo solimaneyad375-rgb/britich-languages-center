@@ -111,7 +111,7 @@ export const SharedBarcodeCard: React.FC<SharedBarcodeCardProps> = ({ cohort, la
               {lang === 'ar' ? 'سعة المجموعة' : 'Cohort Quota'}
             </span>
             <span className="text-sm font-bold font-mono text-[#DFC075]">
-              {cohort.students.length} / {cohort.maxCapacity} {lang === 'ar' ? 'متدرباً' : 'Students'}
+              {cohort.enrolledCount || cohort.students?.length || 30} / {cohort.maxCapacity || 30} {lang === 'ar' ? 'متدرباً' : 'Students'}
             </span>
           </div>
 

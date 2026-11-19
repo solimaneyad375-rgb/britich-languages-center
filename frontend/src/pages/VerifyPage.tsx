@@ -239,117 +239,15 @@ export const VerifyPage: React.FC<VerifyPageProps> = ({ initialQuery = '', navig
               </div>
             </div>
 
-            {/* A. If Shared Barcode Cohort was verified */}
+            {/* A. If Shared Barcode was verified */}
             {result.sharedBarcodeData ? (
-              <div className="space-y-8">
-                {/* 1. Barcode Graphic & Cohort Summary Card */}
+              <div className="space-y-6">
+                {/* 1. Barcode Graphic & Official Accreditation Card */}
                 <SharedBarcodeCard
                   cohort={result.sharedBarcodeData}
                   lang={lang}
                   onPrint={handlePrint}
                 />
-
-                {/* 2. Accredited Students Roster (Cohort Table) */}
-                <div className="bg-white dark:bg-[#10243E] rounded-xs border border-gray-200 dark:border-[#C5A04B]/30 shadow-xl overflow-hidden text-start">
-                  {/* Table Controls Header */}
-                  <div className="p-5 sm:p-6 bg-slate-50 dark:bg-[#0B1E38] border-b border-gray-200 dark:border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <Users className="w-4 h-4 text-[#C5A04B]" />
-                        <h4 className="text-lg sm:text-xl font-bold text-[#102F5C] dark:text-white font-serif">
-                          {lang === 'ar' ? 'سجل المتدربين المعتمدين بالدفعة' : 'Accredited Cohort Student Roster'}
-                        </h4>
-                      </div>
-                      <p className="text-xs text-slate-500 dark:text-[#B8C5D6] mt-0.5">
-                        {lang === 'ar'
-                          ? `إجمالي المتدربين المسجلين والمعتمدين رسمياً بالباركود ${result.sharedBarcodeData.barcode}: ${result.sharedBarcodeData.students.length} متدرباً`
-                          : `Total authenticated candidates in cohort ${result.sharedBarcodeData.barcode}: ${result.sharedBarcodeData.students.length} students`}
-                      </p>
-                    </div>
-
-                    {/* Filter Input */}
-                    <div className="relative w-full sm:w-72">
-                      <div className="absolute inset-y-0 start-0 ps-3 flex items-center pointer-events-none text-slate-400">
-                        <Filter className="w-3.5 h-3.5 text-[#C5A04B]" />
-                      </div>
-                      <input
-                        type="text"
-                        value={studentSearch}
-                        onChange={(e) => setStudentSearch(e.target.value)}
-                        placeholder={lang === 'ar' ? 'بحث باسم المتدرب أو الرقم...' : 'Filter candidates...'}
-                        className="w-full ps-9 pe-3 py-1.5 rounded-xs bg-white dark:bg-[#152B49] border border-gray-300 dark:border-white/10 text-xs text-[#102F5C] dark:text-white focus:border-[#C5A04B] focus:outline-none"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Responsive Table */}
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-xs text-start">
-                      <thead className="bg-[#F8FAFC] dark:bg-[#09182C] text-slate-600 dark:text-[#A9B8CC] font-mono border-b border-gray-200 dark:border-white/10 uppercase">
-                        <tr>
-                          <th className="py-3 px-4 text-center w-12">#</th>
-                          <th className="py-3 px-4">{lang === 'ar' ? 'رقم القيد' : 'Student ID'}</th>
-                          <th className="py-3 px-4">{lang === 'ar' ? 'اسم المتدرب (عربي)' : 'Name (Arabic)'}</th>
-                          <th className="py-3 px-4">{lang === 'ar' ? 'اسم المتدرب (إنجليزي)' : 'Name (English)'}</th>
-                          <th className="py-3 px-4">{lang === 'ar' ? 'التقدير المعتمد' : 'Standing'}</th>
-                          <th className="py-3 px-4 text-center">{lang === 'ar' ? 'حالة الاعتماد' : 'Verification'}</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-gray-200 dark:divide-white/5 font-sans">
-                        {filteredStudents.map((student, idx) => (
-                          <tr
-                            key={student.id}
-                            className="hover:bg-slate-50 dark:hover:bg-[#152B49]/70 transition-colors"
-                          >
-                            <td className="py-3 px-4 text-center font-mono text-slate-400 font-bold">
-                              {idx + 1}
-                            </td>
-                            <td className="py-3 px-4 font-mono font-bold text-[#C5A04B] dark:text-[#DFC075]">
-                              {student.studentIdNumber}
-                            </td>
-                            <td className="py-3 px-4 font-bold text-[#102F5C] dark:text-white">
-                              {student.nameAr}
-                            </td>
-                            <td className="py-3 px-4 font-medium text-slate-700 dark:text-[#D5E0EE]">
-                              {student.nameEn}
-                            </td>
-                            <td className="py-3 px-4 font-medium text-[#C5A04B]">
-                              {lang === 'ar' ? student.gradeAr : student.gradeEn}
-                            </td>
-                            <td className="py-3 px-4 text-center">
-                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 text-[10px] font-bold">
-                                <Check className="w-3 h-3" />
-                                <span>{lang === 'ar' ? 'معتمد' : 'Verified'}</span>
-                              </span>
-                            </td>
-                          </tr>
-                        ))}
-
-                        {filteredStudents.length === 0 && (
-                          <tr>
-                            <td colSpan={6} className="py-8 text-center text-slate-500 dark:text-slate-400">
-                              {lang === 'ar'
-                                ? 'لا توجد نتائج مطابقة لبحثك داخل هذه الدفعة.'
-                                : 'No matching candidates found in this cohort.'}
-                            </td>
-                          </tr>
-                        )}
-                      </tbody>
-                    </table>
-                  </div>
-
-                  {/* Institutional Legal Stamp Footer */}
-                  <div className="p-4 bg-slate-50 dark:bg-[#0B1E38] border-t border-gray-200 dark:border-white/10 flex flex-col sm:flex-row items-center justify-between text-[11px] text-slate-500 dark:text-[#A9B8CC] font-mono gap-2">
-                    <span>
-                      {lang === 'ar'
-                        ? 'وثيقة رسمية صادرة بالباركود الموحد — معتمدة ومطابقة للسجلات المركزية'
-                        : 'Official Cohort Verification Record Issued Under Registered Shared Barcode'}
-                    </span>
-                    <span className="text-[#C5A04B] font-bold">
-                      BRITISH CENTER FOR LANGUAGES • REG. 16605467
-                    </span>
-                  </div>
-                </div>
               </div>
             ) : null}
 

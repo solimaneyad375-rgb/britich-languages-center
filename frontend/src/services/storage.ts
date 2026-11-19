@@ -413,6 +413,25 @@ class StorageService {
     return groupData;
   }
 
+  public updateSharedBarcode(id: number, updates: Partial<SharedBarcodeGroup>): SharedBarcodeGroup | null {
+    const list = this.getSharedBarcodes();
+    const idx = list.findIndex((g) => g.id === id);
+    if (idx === -1) return null;
+    list[idx] = { ...list[idx], ...updates };
+    localStorage.setItem(STORAGE_KEYS.SHARED_BARCODES, JSON.stringify(list));
+    this.notifyChange();
+    return list[idx];
+  }
+
+  public deleteSharedBarcode(id: number): boolean {
+    const list = this.getSharedBarcodes();
+    const filtered = list.filter((g) => g.id !== id);
+    if (filtered.length === list.length) return false;
+    localStorage.setItem(STORAGE_KEYS.SHARED_BARCODES, JSON.stringify(filtered));
+    this.notifyChange();
+    return true;
+  }
+
   // Reset to default demo data
   public resetDemoData(): void {
     localStorage.setItem(STORAGE_KEYS.STUDENTS, JSON.stringify(DEFAULT_STUDENTS));
@@ -657,19 +676,25 @@ class StorageService {
       this.logActivity(
         'Shared Barcode Verified',
         'فحص باركود موحد معتمد',
-        `Cohort ${matchedCohort.barcode} verified — ${matchedCohort.students.length} students authenticated`,
+        `Cohort ${matchedCohort.barcode} verified — Status: ${matchedCohort.status}`,
         'verification'
       );
+
+      // Protect confidential student roster from public verification exposure
+      const publicCohort: SharedBarcodeGroup = {
+        ...matchedCohort,
+        students: [],
+      };
 
       return {
         isFound: true,
         isValid: matchedCohort.status === 'Valid',
         status: matchedCohort.status,
         statusBadgeColor: matchedCohort.status === 'Valid' ? 'green' : 'amber',
-        messageEn: 'Accredited Shared Barcode Verified. Group Dossier and 30 Certified Candidates Authenticated.',
-        messageAr: 'تم التحقق من الباركود الموحد المعتمد: الدفعة والبيانات وسجل الـ 30 متدرباً معتمدة رسمياً.',
+        messageEn: `Accredited Shared Barcode Verified. Barcode ${matchedCohort.barcode} is authentic, valid, and registered in the central UK ledger of the British Center for Languages.`,
+        messageAr: `تم التحقق من الباركود الموحد المعتمد: كود الباركود (${matchedCohort.barcode}) معتمد وسارٍ رسمياً ومسجل في قاعدة البيانات المركزية للمركز البريطاني لتعليم اللغات بالمملكة المتحدة.`,
         isSharedBarcode: true,
-        sharedBarcodeData: matchedCohort,
+        sharedBarcodeData: publicCohort,
         certificateNumber: matchedCohort.barcode,
         courseNameEn: matchedCohort.titleEn,
         courseNameAr: matchedCohort.titleAr,
