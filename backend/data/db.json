@@ -237,6 +237,15 @@
   },
   "activityLogs": [
     {
+      "id": 1795300246679,
+      "action": "Accreditation Verification",
+      "actionAr": "التحقق من الاعتماد",
+      "entityType": "Code verified successfully (Status: Valid)",
+      "entityId": "verification",
+      "timestamp": "2026-11-21T22:30:46.679Z",
+      "username": "bcl_chief_admin"
+    },
+    {
       "id": 1,
       "action": "System Initialized",
       "actionAr": "تهيئة النظام وقواعد البيانات الإدارية",
@@ -247,7 +256,7 @@
       "username": "System"
     }
   ],
-  "verificationCount": 2844,
+  "verificationCount": 2846,
   "sharedBarcodes": [
     {
       "id": 1,

@@ -97,8 +97,8 @@ export interface SharedBarcodeGroup {
 export interface PublicVerificationResponse {
   isFound: boolean;
   isValid: boolean;
-  status: 'Valid' | 'Revoked' | 'Expired' | 'Pending' | 'NotFound';
-  statusBadgeColor: string;
+  status?: 'Valid' | 'Revoked' | 'Expired' | 'Pending' | 'NotFound';
+  statusBadgeColor?: string;
   messageEn: string;
   messageAr: string;
   isSharedBarcode?: boolean;

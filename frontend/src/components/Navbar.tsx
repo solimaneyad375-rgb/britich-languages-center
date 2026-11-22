@@ -44,7 +44,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath: propPath, navigate:
     { path: '/services', label: lang === 'ar' ? 'خدماتنا' : 'Our Services' },
     { path: '/uk-cooperation', label: lang === 'ar' ? 'التعاون البريطاني' : 'UK Cooperation' },
     { path: '/certificates', label: lang === 'ar' ? 'الشهادات المعتمدة' : 'Academic Certificates' },
-    { path: '/verify', label: lang === 'ar' ? 'التحقق بالباركود الموحد' : 'Shared Barcode Verification', isVerify: true },
+    { path: '/verify', label: lang === 'ar' ? 'التحقق من الاعتماد' : 'Accreditation Verification', isVerify: true },
     { path: '/partners', label: lang === 'ar' ? 'شركاؤنا' : 'Partners' },
     { path: '/contact', label: lang === 'ar' ? 'تواصل معنا' : 'Contact Us' },
   ];

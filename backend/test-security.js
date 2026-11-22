@@ -13,6 +13,7 @@ import { authLimiter, apiLimiter } from './src/middleware/rateLimiter.js';
 import { requireAdminAuth } from './src/middleware/auth.js';
 import { authController } from './src/controllers/authController.js';
 import { adminController } from './src/controllers/adminController.js';
+import { verifyController } from './src/controllers/verifyController.js';
 
 async function runTestSuite() {
   console.log('=== BRITISH CENTER SECURITY VERIFICATION TEST SUITE ===\n');
@@ -24,6 +25,7 @@ async function runTestSuite() {
   app.use(cookieParser());
   app.use(cors({ origin: true, credentials: true }));
 
+  app.get('/api/verify', verifyController.verify);
   app.post('/api/auth/login', authLimiter, authController.login);
   app.post('/api/auth/logout', authController.logout);
   app.get('/api/auth/me', requireAdminAuth, authController.me);
@@ -112,7 +114,27 @@ async function runTestSuite() {
     }
     console.log(`  -> Rate limiter active: ${rateLimited}`);
 
-    console.log('\n=== ALL 6 SECURITY TESTS PASSED PERFECTLY ===\n');
+    // TEST 7: Confidential Public Verification Endpoint
+    console.log('\n[TEST 7] Testing confidential public verification with valid active code...');
+    const res7Valid = await fetch(`${base}/api/verify?query=BC-QT-0047`);
+    console.log(`  -> Status: ${res7Valid.status} (Expected: 200)`);
+    const json7Valid = await res7Valid.json();
+    console.log(`  -> Payload: ${JSON.stringify(json7Valid)}`);
+    if (!json7Valid.data?.isValid) throw new Error('TEST 7 FAILED: Expected isValid: true');
+    if (json7Valid.data.students || json7Valid.data.studentNameEn || json7Valid.data.sharedBarcodeData) {
+      throw new Error('TEST 7 FAILED: Confidential data leaked in verification response!');
+    }
+    console.log('  -> Success message matches: ' + json7Valid.data.messageAr);
+
+    console.log('\n[TEST 8] Testing confidential public verification with invalid code...');
+    const res8Invalid = await fetch(`${base}/api/verify?query=INVALID_TEST_CODE_9999`);
+    const json8Invalid = await res8Invalid.json();
+    console.log(`  -> Status: ${res8Invalid.status} (Expected: 200)`);
+    console.log(`  -> Payload: ${JSON.stringify(json8Invalid)}`);
+    if (json8Invalid.data?.isValid) throw new Error('TEST 8 FAILED: Expected isValid: false');
+    console.log('  -> Failure message matches: ' + json8Invalid.data.messageAr);
+
+    console.log('\n=== ALL 8 SECURITY & PRIVACY TESTS PASSED PERFECTLY ===\n');
   } finally {
     server.close();
   }

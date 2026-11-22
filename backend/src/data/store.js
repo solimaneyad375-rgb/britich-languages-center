@@ -205,145 +205,88 @@ class DataStore {
       return {
         isFound: false,
         isValid: false,
-        status: 'NotFound',
-        statusBadgeColor: 'gray',
-        messageEn: 'No certificate reference or student identifier was provided.',
-        messageAr: 'لم يتم إدخال رقم مرجعي للشهادة أو المعرف الأكاديمي للطالب.',
+        messageAr: 'رمز التحقق غير صحيح أو غير معتمد. يرجى مراجعة الرمز والمحاولة مرة أخرى.',
+        messageEn: 'The verification code is invalid or unaccredited. Please check the code and try again.',
       };
     }
 
     const q = rawQuery.trim().toLowerCase();
+    const cleanQ = q.replace(/[^a-z0-9]/g, '');
 
-    // 1. Shared Barcode Verification (BC-QT-0047 & accredited cohorts)
+    // 1. Shared Barcode Verification (e.g. BC-QT-0047 & accredited cohorts)
     const matchedCohort = (this.data.sharedBarcodes || []).find(
       g =>
         g.barcode.toLowerCase().trim() === q ||
-        q === 'bc-qt-0047' ||
-        q === 'bcqt0047' ||
-        q === '0047' ||
-        q === 'bc-qt'
+        (cleanQ && g.barcode.toLowerCase().replace(/[^a-z0-9]/g, '') === cleanQ)
     );
 
-    if (matchedCohort) {
-      const publicCohort = {
-        ...matchedCohort,
-        students: [], // Confidential
-      };
-
+    if (matchedCohort && matchedCohort.status === 'Valid') {
+      this.logActivity(
+        'Accreditation Verification',
+        'التحقق من الاعتماد',
+        `Code verified successfully (Status: Valid)`,
+        'verification'
+      );
       return {
         isFound: true,
-        isValid: matchedCohort.status === 'Valid',
-        status: matchedCohort.status,
-        statusBadgeColor: matchedCohort.status === 'Valid' ? 'green' : 'amber',
-        messageEn: `Accredited Shared Barcode Verified. Barcode ${matchedCohort.barcode} is authentic, valid, and registered in the central UK ledger of the British Center for Languages.`,
-        messageAr: `تم التحقق من الباركود الموحد المعتمد: كود الباركود (${matchedCohort.barcode}) معتمد وسارٍ رسمياً ومسجل في قاعدة البيانات المركزية للمركز البريطاني لتعليم اللغات بالمملكة المتحدة.`,
-        isSharedBarcode: true,
-        sharedBarcodeData: publicCohort,
-        certificateNumber: matchedCohort.barcode,
-        courseNameEn: matchedCohort.titleEn,
-        courseNameAr: matchedCohort.titleAr,
-        issuingOrganizationEn: matchedCohort.issuingOrganizationEn,
-        issuingOrganizationAr: matchedCohort.issuingOrganizationAr,
-        accreditingEntityEn: matchedCohort.accreditingEntityEn,
-        accreditingEntityAr: matchedCohort.accreditingEntityAr,
-        issueDate: matchedCohort.issueDate,
-        expiryDate: matchedCohort.expiryDate,
+        isValid: true,
+        messageAr: 'تم التحقق بنجاح. نؤكد أن حامل رمز التحقق قد اجتاز الدورة التدريبية بنجاح، وأن تسجيله واعتماده مثبت لدى British Center for Languages.',
+        messageEn: 'Verification successful. We confirm that the bearer of this verification code has successfully passed the training course, and that their registration and accreditation are officially verified with British Center for Languages.',
       };
     }
 
-    // Check individual student in any shared cohort
+    // Check individual student in any active shared cohort
     for (const cohort of this.data.sharedBarcodes || []) {
+      if (cohort.status !== 'Valid') continue;
       const studentMatch = (cohort.students || []).find(
         s =>
           s.studentIdNumber.toLowerCase().trim() === q ||
-          s.nameEn.toLowerCase().trim() === q ||
-          s.nameAr.trim() === q
+          (cleanQ && s.studentIdNumber.toLowerCase().replace(/[^a-z0-9]/g, '') === cleanQ)
       );
-      if (studentMatch) {
+      if (studentMatch && studentMatch.status === 'Verified') {
+        this.logActivity(
+          'Accreditation Verification',
+          'التحقق من الاعتماد',
+          `Student code verified successfully under cohort`,
+          'verification'
+        );
         return {
           isFound: true,
           isValid: true,
-          status: 'Valid',
-          statusBadgeColor: 'green',
-          messageEn: `Candidate verified under Accredited Shared Barcode ${cohort.barcode}.`,
-          messageAr: `المتدرب معتمد ومقيد رسمياً ضمن الدفعة الصادرة بالباركود الموحد ${cohort.barcode}.`,
-          isSharedBarcode: true,
-          sharedBarcodeData: cohort,
-          studentNameEn: studentMatch.nameEn,
-          studentNameAr: studentMatch.nameAr,
-          studentIdNumber: studentMatch.studentIdNumber,
-          certificateNumber: cohort.barcode,
-          courseNameEn: cohort.titleEn,
-          courseNameAr: cohort.titleAr,
-          gradeEn: studentMatch.gradeEn,
-          gradeAr: studentMatch.gradeAr,
-          issuingOrganizationEn: cohort.issuingOrganizationEn,
-          issuingOrganizationAr: cohort.issuingOrganizationAr,
-          accreditingEntityEn: cohort.accreditingEntityEn,
-          accreditingEntityAr: cohort.accreditingEntityAr,
-          issueDate: cohort.issueDate,
-          expiryDate: cohort.expiryDate,
+          messageAr: 'تم التحقق بنجاح. نؤكد أن حامل رمز التحقق قد اجتاز الدورة التدريبية بنجاح، وأن تسجيله واعتماده مثبت لدى British Center for Languages.',
+          messageEn: 'Verification successful. We confirm that the bearer of this verification code has successfully passed the training course, and that their registration and accreditation are officially verified with British Center for Languages.',
         };
       }
     }
 
     // 2. Historical Individual Certificates
-    const cert = this.data.certificates.find(c =>
-      c.certificateNumber.toLowerCase() === q ||
-      (c.uniqueToken && c.uniqueToken.toLowerCase() === q) ||
-      c.studentIdNumber.toLowerCase() === q
+    const cert = (this.data.certificates || []).find(c =>
+      c.certificateNumber.toLowerCase().trim() === q ||
+      (c.uniqueToken && c.uniqueToken.toLowerCase().trim() === q) ||
+      (cleanQ && c.certificateNumber.toLowerCase().replace(/[^a-z0-9]/g, '') === cleanQ)
     );
 
-    if (!cert) {
+    if (cert && cert.status === 'Valid') {
+      this.logActivity(
+        'Accreditation Verification',
+        'التحقق من الاعتماد',
+        `Credential code verified successfully`,
+        'verification'
+      );
       return {
-        isFound: false,
-        isValid: false,
-        status: 'NotFound',
-        statusBadgeColor: 'red',
-        messageEn: 'Record Not Found. No accredited credential matches the query in the official registry.',
-        messageAr: 'لم يتم العثور على أي سجل مطابق في قاعدة بيانات الشهادات المعتمدة الرسمية.',
+        isFound: true,
+        isValid: true,
+        messageAr: 'تم التحقق بنجاح. نؤكد أن حامل رمز التحقق قد اجتاز الدورة التدريبية بنجاح، وأن تسجيله واعتماده مثبت لدى British Center for Languages.',
+        messageEn: 'Verification successful. We confirm that the bearer of this verification code has successfully passed the training course, and that their registration and accreditation are officially verified with British Center for Languages.',
       };
     }
 
-    const isValid = cert.status === 'Valid';
-    let color = 'green';
-    let messageEn = 'Certificate Record Verified. The credential has been authenticated against the official institution registry.';
-    let messageAr = 'تم العثور على سجل الشهادة والتحقق من صحة بياناتها وسريان اعتمادها رسمياً.';
-
-    if (cert.status === 'Revoked') {
-      color = 'red';
-      messageEn = `CREDENTIAL REVOKED: This certificate was formally revoked. Reason: ${cert.revocationReason || 'Administrative cancellation'}`;
-      messageAr = `شهادة ملغاة رسمياً: تم سحب وإلغاء هذه الشهادة بقرار إداري معتمد. السبب: ${cert.revocationReason || 'إلغاء إداري'}`;
-    } else if (cert.status === 'Expired') {
-      color = 'amber';
-      messageEn = 'CREDENTIAL EXPIRED: The validity period for this professional credential has lapsed.';
-      messageAr = 'شهادة منتهية الصلاحية: انقضت الفترة الزمنية المحددة لسريان هذا الاعتماد المهني.';
-    }
-
+    // Invalid or Inactive (do not reveal internal existence)
     return {
-      isFound: true,
-      isValid,
-      status: cert.status,
-      statusBadgeColor: color,
-      messageEn,
-      messageAr,
-      certificateNumber: cert.certificateNumber,
-      studentNameEn: cert.studentNameEn,
-      studentNameAr: cert.studentNameAr,
-      studentIdNumber: cert.studentIdNumber,
-      courseNameEn: cert.courseNameEn,
-      courseNameAr: cert.courseNameAr,
-      issueDate: cert.issueDate,
-      expiryDate: cert.expiryDate,
-      issuingOrganizationEn: cert.issuingOrganizationEn,
-      issuingOrganizationAr: cert.issuingOrganizationAr,
-      accreditingEntityEn: cert.accreditingEntityEn,
-      accreditingEntityAr: cert.accreditingEntityAr,
-      gradeEn: cert.gradeEn,
-      gradeAr: cert.gradeAr,
-      uniqueToken: cert.uniqueToken,
-      revocationReason: cert.revocationReason,
-      revokedAt: cert.revokedAt,
+      isFound: false,
+      isValid: false,
+      messageAr: 'رمز التحقق غير صحيح أو غير معتمد. يرجى مراجعة الرمز والمحاولة مرة أخرى.',
+      messageEn: 'The verification code is invalid or unaccredited. Please check the code and try again.',
     };
   }
 
