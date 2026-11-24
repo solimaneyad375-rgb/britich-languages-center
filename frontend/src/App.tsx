@@ -9,6 +9,7 @@ import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-route
 import { useAuth } from './context/AuthContext';
 import { Navbar } from './components/Navbar';
 import { Footer } from './components/Footer';
+import { LeadershipSection } from './components/LeadershipSection';
 import { HomePage } from './pages/HomePage';
 import { AboutPage } from './pages/AboutPage';
 import { ServicesPage } from './pages/ServicesPage';
@@ -117,6 +118,13 @@ const AppLayout: React.FC = () => {
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>
+
+      {/* Official Executive Management & Leadership Profile (Visible Across All Pages) */}
+      {!isAdminDashboard && (
+        <div className="no-print">
+          <LeadershipSection />
+        </div>
+      )}
 
       {/* Institutional Footer (hidden on active admin dashboard or print) */}
       {!isAdminDashboard && (
