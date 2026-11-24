@@ -7,6 +7,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 import { AboutSection } from '../components/AboutSection';
+import { LeadershipSection } from '../components/LeadershipSection';
 import { UkCooperationSection } from '../components/UkCooperationSection';
 import { getAssetUrl } from '../utils/assets';
 
@@ -102,6 +103,9 @@ export const AboutPage: React.FC<AboutPageProps> = ({ navigate: propNavigate }) 
 
       {/* Main Narrative & Values Section */}
       <AboutSection />
+
+      {/* Official Executive Management & Leadership Profile */}
+      <LeadershipSection />
 
       {/* Structured Institutional Principles on Elevated Surfaces */}
       <section className="py-16 sm:py-24 bg-[#F7F8FA] dark:bg-[#08182E] border-b border-gray-200 dark:border-[rgba(197,160,75,0.22)]">
